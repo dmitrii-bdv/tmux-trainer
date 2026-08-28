@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+TEMPLATE="${ROOT_DIR}/launchd/com.local.tmux-trainer.plist.template"
+TARGET="${HOME}/Library/LaunchAgents/com.local.tmux-trainer.plist"
+LABEL="com.local.tmux-trainer"
+
+mkdir -p "${HOME}/Library/LaunchAgents"
+
+sed \
+  -e "s|__TRAINER_SCRIPT__|${ROOT_DIR}/scripts/tmux-trainer|g" \
+  -e "s|__HOME__|${HOME}|g" \
+  "${TEMPLATE}" > "${TARGET}"
+
+chmod 644 "${TARGET}"
+
+launchctl bootout "gui/$(id -u)" "${TARGET}" 2>/dev/null || true
+launchctl bootstrap "gui/$(id -u)" "${TARGET}"
+
+echo "Installed ${LABEL}"
+echo "Schedule: Monday-Friday at 09:00"
+echo
+echo "Test now:"
+echo "  launchctl kickstart -k gui/$(id -u)/${LABEL}"
+echo
+echo "Logs:"
+echo "  tail -f ${HOME}/Library/Logs/tmux-trainer.log"

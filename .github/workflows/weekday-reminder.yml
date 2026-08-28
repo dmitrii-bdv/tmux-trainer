@@ -1,0 +1,49 @@
+name: Weekday tmux reminder
+
+on:
+  schedule:
+    # GitHub cron is UTC.
+    # Run during 07:00-09:00 UTC and let the job decide whether it is 09:00 in Berlin.
+    - cron: "0 7-9 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Decide whether this is the Berlin 09:00 run
+        id: time
+        shell: bash
+        run: |
+          BERLIN_HOUR="$(TZ=Europe/Berlin date +%H)"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "${BERLIN_HOUR}" == "09" ]]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        if: steps.time.outputs.run == 'true'
+        uses: actions/checkout@v4
+
+      - name: Create today's training issue
+        if: steps.time.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          DAY="$(TZ=Europe/Berlin date +%u)"
+          printf -v DAY_PADDED "%02d" "${DAY}"
+          EXERCISE="exercises/day-${DAY_PADDED}.md"
+
+          TITLE="$(grep -m1 '^# ' "${EXERCISE}" | sed 's/^# //')"
+
+          gh issue create \
+            --title "tmux training: ${TITLE}" \
+            --body-file "${EXERCISE}" \
+            --assignee "${GITHUB_REPOSITORY_OWNER}"
