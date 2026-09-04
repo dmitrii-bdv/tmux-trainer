@@ -1,20 +1,59 @@
 # tmux-trainer
 
-A small learn-by-doing tmux training repo for macOS + iTerm2.
+A learn-by-doing tmux training repo for macOS + iTerm2.
 
-It gives you one practical tmux exercise per working day, shows a macOS notification,
-and can open the exercise in your terminal.
+One practical exercise per working day, delivered as a macOS
+notification. The curriculum spans four weeks (20 exercises)
+and repeats on a four-week cycle keyed to the ISO week number.
+
+## Curriculum
+
+### Week 1 — Foundations
+
+| Day | Topic                  |
+|-----|------------------------|
+| 01  | Sessions               |
+| 02  | Windows                |
+| 03  | Panes                  |
+| 04  | Debugging workspace    |
+| 05  | Recovery drill         |
+
+### Week 2 — Navigation & Layout
+
+| Day | Topic                  |
+|-----|------------------------|
+| 06  | Pane layouts           |
+| 07  | Copy mode I: scrollback|
+| 08  | Multiple sessions      |
+| 09  | Pane synchronization   |
+| 10  | tmux.conf basics       |
+
+### Week 3 — Configuration & Productivity
+
+| Day | Topic                    |
+|-----|--------------------------|
+| 11  | Status bar               |
+| 12  | Scripted layouts         |
+| 13  | Target syntax            |
+| 14  | Copy mode II: yank/paste |
+| 15  | Capture pane output      |
+
+### Week 4 — Real Workflows
+
+| Day | Topic                      |
+|-----|----------------------------|
+| 16  | Multi-repo workspace script|
+| 17  | AWS / Terraform workspace  |
+| 18  | Manual session snapshot    |
+| 19  | Live config reload         |
+| 20  | Final drill: SRE workspace |
 
 ## Design
 
 ```text
 tmux-trainer/
 ├── exercises/
-│   ├── day-01.md
-│   ├── day-02.md
-│   ├── day-03.md
-│   ├── day-04.md
-│   └── day-05.md
+│   ├── day-01.md  …  day-20.md
 ├── scripts/
 │   ├── tmux-trainer
 │   └── install-launchd
@@ -48,7 +87,7 @@ chmod +x scripts/tmux-trainer scripts/install-launchd
 Show a specific exercise:
 
 ```bash
-./scripts/tmux-trainer 3
+./scripts/tmux-trainer 7
 ```
 
 ### 4. Install the weekday macOS reminder
@@ -57,7 +96,7 @@ Show a specific exercise:
 ./scripts/install-launchd
 ```
 
-The default schedule is 09:00, Monday-Friday.
+The default schedule is 09:00, Monday–Friday.
 
 The installer creates:
 
@@ -76,46 +115,36 @@ launchctl kickstart -k gui/$(id -u)/com.local.tmux-trainer
 ### 6. Remove it
 
 ```bash
-launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.local.tmux-trainer.plist
+launchctl bootout gui/$(id -u) \
+  ~/Library/LaunchAgents/com.local.tmux-trainer.plist
 rm ~/Library/LaunchAgents/com.local.tmux-trainer.plist
 ```
 
-## What happens when it runs?
+## How the exercise is chosen
 
-The trainer:
+The script uses the ISO week number and the day of the week
+to pick an exercise in the 4-week cycle:
 
-1. chooses an exercise based on the weekday;
-2. sends a macOS notification;
-3. writes today's exercise path to the terminal;
-4. optionally opens iTerm2 with the exercise.
-
-Run:
-
-```bash
-./scripts/tmux-trainer
+```text
+week_in_cycle = (ISO_week - 1) % 4        # 0-3
+exercise      = week_in_cycle * 5 + weekday  # 1-20
 ```
 
-to see the exercise directly.
+This is stateless and consistent across both the local
+launchd job and the GitHub Actions workflow.
 
 ## GitHub Actions reminder
 
-`.github/workflows/weekday-reminder.yml` is included as an optional cloud-side reminder.
+`.github/workflows/weekday-reminder.yml` creates a GitHub
+issue assigned to the repo owner each weekday at 09:00
+Berlin time, using the same 4-week exercise formula.
 
-It creates a GitHub issue assigned to the repository owner on weekdays.
-
-GitHub Actions cron schedules use UTC, so the included workflow runs hourly during a small
-morning window and checks `Europe/Berlin` inside the job. This avoids DST problems.
-
-If you don't want GitHub issue reminders, simply delete the workflow.
+If you don't want GitHub issue reminders, delete the
+workflow file.
 
 ## Suggested next steps
 
-Once the basic trainer works, useful additions are:
-
-- track completed exercises;
-- randomly choose drills from a larger exercise pool;
-- inspect live tmux sessions/windows/panes;
-- verify that an exercise was completed;
-- add streaks and progress;
-- add Kubernetes/Terraform/AWS-specific tmux challenges;
-- add an interactive `tmux-trainer check` command.
+- Track completed exercises with a local state file.
+- Add an interactive `tmux-trainer check` command that
+  inspects live tmux sessions/windows/panes.
+- Add streaks and progress visualization.

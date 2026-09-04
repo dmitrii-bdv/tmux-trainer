@@ -3,15 +3,26 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 EXERCISE_DIR="${ROOT_DIR}/exercises"
+TOTAL_EXERCISES=20
 
 if [[ $# -gt 0 ]]; then
   DAY="$1"
 else
-  # Monday=1 ... Friday=5. Weekends fall back to day 1.
-  DAY="$(date +%u)"
-  if [[ "${DAY}" -gt 5 ]]; then
-    DAY=1
+  # Map ISO week + weekday to exercise 1-20.
+  # (week - 1) % 4 gives which week in the 4-week cycle (0-3).
+  # Weekends fall back to Monday (day 1).
+  WEEK="$(date +%V)"
+  DOW="$(date +%u)"
+  if [[ "${DOW}" -gt 5 ]]; then
+    DOW=1
   fi
+  WEEK_MOD=$(( (WEEK - 1) % 4 ))
+  DAY=$(( WEEK_MOD * 5 + DOW ))
+fi
+
+if [[ "${DAY}" -lt 1 || "${DAY}" -gt "${TOTAL_EXERCISES}" ]]; then
+  echo "Day must be between 1 and ${TOTAL_EXERCISES}" >&2
+  exit 1
 fi
 
 printf -v DAY_PADDED "%02d" "${DAY}"
@@ -24,9 +35,10 @@ fi
 
 TITLE="$(grep -m1 '^# ' "${EXERCISE}" | sed 's/^# //')"
 SUMMARY="$(grep -m1 '^Goal:' "${EXERCISE}" | sed 's/^Goal:[[:space:]]*//')"
+NOTIFICATION="${SUMMARY:-Open the tmux exercise for today}"
 
 if command -v osascript >/dev/null 2>&1; then
-  osascript -e "display notification \"${SUMMARY:-Open today's tmux exercise}\" with title \"tmux trainer\" subtitle \"${TITLE}\""
+  osascript -e "display notification \"${NOTIFICATION}\" with title \"tmux trainer\" subtitle \"${TITLE}\""
 fi
 
 echo
@@ -39,13 +51,12 @@ echo
 # Optional: open iTerm2 and show the exercise.
 # Set TMUX_TRAINER_OPEN_ITERM=1 in your shell environment to enable.
 if [[ "${TMUX_TRAINER_OPEN_ITERM:-0}" == "1" ]] && [[ -d "/Applications/iTerm.app" ]]; then
-  osascript <<EOF
-tell application "iTerm"
-  activate
-  create window with default profile
-  tell current session of current window
-    write text "cd '${ROOT_DIR}' && cat '${EXERCISE}'"
-  end tell
-end tell
-EOF
+  osascript \
+    -e 'tell application "iTerm"' \
+    -e '  activate' \
+    -e '  create window with default profile' \
+    -e '  tell current session of current window' \
+    -e "    write text \"cd '${ROOT_DIR}' && cat '${EXERCISE}'\"" \
+    -e '  end tell' \
+    -e 'end tell'
 fi
