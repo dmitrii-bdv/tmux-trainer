@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 EXERCISE_DIR="${ROOT_DIR}/exercises"
-TOTAL_EXERCISES=20
+TOTAL_EXERCISES=24
 
 if [[ $# -gt 0 ]]; then
   DAY="$1"
