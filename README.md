@@ -3,9 +3,9 @@
 Learn tmux by doing — one short exercise each working day,
 delivered as a macOS notification at 09:00.
 
-The curriculum spans four weeks and 20 exercises. It starts
+The curriculum spans five weeks and 24 exercises. It starts
 with the basics (sessions, windows, panes) and finishes with
-automated workspace scripts and a timed SRE drill. After four
+automated workspace scripts and a timed SRE drill. After five
 weeks it repeats, so skills stay sharp through repetition.
 
 ## Learning structure
@@ -80,6 +80,19 @@ from memory, in under five minutes.
 | 19  | Live config reload          | iterate on config without restarting|
 | 20  | Final drill: SRE workspace  | full build from memory, timed       |
 
+### Week 5 — Advanced Layouts
+
+Push past standard splits into precise, scripted layouts.
+The week ends with a full dev workspace you can spin up
+in one command.
+
+| Day | Topic                    | What you practise                          |
+|-----|--------------------------|--------------------------------------------|
+| 21  | Sized splits             | create panes with exact percentages        |
+| 22  | Side panel               | persistent side pane alongside main work   |
+| 23  | Asymmetric layout script | script a custom non-standard layout        |
+| 24  | Dev workspace setup      | full dev workspace script from scratch     |
+
 ### Progression at a glance
 
 ```text
@@ -87,12 +100,16 @@ Week 1   You know what tmux is and can stay inside it.
 Week 2   You can navigate fluently and configure the basics.
 Week 3   You script your environment instead of clicking.
 Week 4   tmux is your primary working surface.
+Week 5   You build precise, scripted layouts from memory.
 ```
 
 ## Repository layout
 
 ```text
 tmux-trainer/
+├── docs/
+│   ├── github-workflow.md    workflow setup and Telegram config
+│   └── scripts.md            tmux-trainer and install-launchd reference
 ├── exercises/
 │   ├── day-01.md
 │   ├── day-02.md
@@ -159,31 +176,32 @@ rm ~/Library/LaunchAgents/com.local.tmux-trainer.plist
 
 ## How the exercise is selected
 
-The script is stateless. It computes today's exercise from
-the ISO week number and the day of the week:
+The script is stateless. It counts `exercises/day-*.md` files at
+runtime and computes today's exercise from the ISO week and weekday:
 
 ```text
-week_in_cycle = (ISO_week - 1) % 4   → 0, 1, 2, or 3
-exercise      = week_in_cycle × 5 + weekday   → 1 – 20
+total    = number of day-*.md files
+exercise = ((ISO_week - 1) × 5 + weekday - 1) % total + 1
 ```
 
-The result is consistent between the local launchd job and
-the GitHub Actions workflow — both will always show the same
-exercise on the same calendar day.
+Adding a new exercise file automatically extends the cycle — no
+code changes needed. The local script and the GitHub Actions workflow
+use the same formula, so they always show the same exercise.
 
-Weekends fall back to day 1 (Monday of the current cycle)
-so a manual run on a Saturday still returns something useful.
+Weekends fall back to Monday so a manual run on a Saturday still
+returns something useful.
 
 ## GitHub Actions reminder
 
-`.github/workflows/weekday-reminder.yml` creates a GitHub
-issue assigned to the repository owner at 09:00 Berlin time
-each weekday, using the same exercise formula.
+`.github/workflows/weekday-reminder.yml` creates a GitHub issue
+assigned to the repository owner each weekday at your chosen Berlin
+time, and sends a Telegram notification with the issue link.
 
-The workflow fires during 07:00–09:00 UTC and checks the
-Berlin clock inside the job to handle DST correctly.
-
-Delete the workflow file if you do not want GitHub issues.
+The delivery hour is controlled by the `REMINDER_HOUR` repository
+variable (default: `09`). See
+[docs/github-workflow.md](docs/github-workflow.md) for the full
+setup guide, including how to create the Telegram bot and which
+secrets to add to the repository.
 
 ## Suggested next steps
 

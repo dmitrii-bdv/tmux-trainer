@@ -3,21 +3,22 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 EXERCISE_DIR="${ROOT_DIR}/exercises"
-TOTAL_EXERCISES=24
+TOTAL_EXERCISES=$(ls "${EXERCISE_DIR}"/day-*.md 2>/dev/null | wc -l | tr -d ' ')
 
 if [[ $# -gt 0 ]]; then
   DAY="$1"
 else
-  # Map ISO week + weekday to exercise 1-20.
-  # (week - 1) % 4 gives which week in the 4-week cycle (0-3).
-  # Weekends fall back to Monday (day 1).
+  # Map ISO week + weekday to exercise 1-N where N = number of exercise files.
+  # Formula: ((week-1)*5 + dow-1) % N + 1
+  # Cycles through all exercises in order; adding a new day-NN.md file
+  # extends the cycle automatically.
+  # Weekends fall back to Monday (dow=1).
   WEEK="$(date +%V)"
   DOW="$(date +%u)"
   if [[ "${DOW}" -gt 5 ]]; then
     DOW=1
   fi
-  WEEK_MOD=$(( (WEEK - 1) % 4 ))
-  DAY=$(( WEEK_MOD * 5 + DOW ))
+  DAY=$(( ( (WEEK - 1) * 5 + DOW - 1 ) % TOTAL_EXERCISES + 1 ))
 fi
 
 if [[ "${DAY}" -lt 1 || "${DAY}" -gt "${TOTAL_EXERCISES}" ]]; then

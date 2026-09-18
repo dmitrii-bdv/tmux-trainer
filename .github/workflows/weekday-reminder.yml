@@ -1,10 +1,13 @@
 name: Weekday tmux reminder
 
+# REMINDER_HOUR: set this repository variable (Settings → Variables) to
+# control which Berlin hour triggers the reminder. Default: "09".
+# Supported range: "06" – "12" (maps to UTC 4–12, covered by the cron).
+
 on:
   schedule:
-    # GitHub cron is UTC.
-    # Run during 07:00-09:00 UTC; job checks whether it is 09:00 in Berlin.
-    - cron: "0 7-9 * * 1-5"
+    # Wide UTC window covers Berlin 06:00–12:00 in both CET and CEST.
+    - cron: "0 4-11 * * 1-5"
   workflow_dispatch:
 
 permissions:
@@ -16,13 +19,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Decide whether this is the Berlin 09:00 run
+      - name: Decide whether this is the target Berlin hour
         id: time
         shell: bash
         run: |
+          TARGET_HOUR="${{ vars.REMINDER_HOUR || '09' }}"
           BERLIN_HOUR="$(TZ=Europe/Berlin date +%H)"
           if [[ "${{ github.event_name }}" == "workflow_dispatch" \
-             || "${BERLIN_HOUR}" == "09" ]]; then
+             || "${BERLIN_HOUR}" == "${TARGET_HOUR}" ]]; then
             echo "run=true" >> "$GITHUB_OUTPUT"
           else
             echo "run=false" >> "$GITHUB_OUTPUT"
@@ -34,21 +38,41 @@ jobs:
 
       - name: Create today's training issue
         if: steps.time.outputs.run == 'true'
+        id: issue
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          # Map ISO week + weekday to exercise 1-20 (4-week cycle).
+          # Count exercises dynamically so new files extend the cycle.
+          TOTAL_EXERCISES=$(ls exercises/day-*.md 2>/dev/null | wc -l | tr -d ' ')
           WEEK="$(TZ=Europe/Berlin date +%V)"
           DOW="$(TZ=Europe/Berlin date +%u)"
-          WEEK_MOD=$(( (WEEK - 1) % 4 ))
-          DAY=$(( WEEK_MOD * 5 + DOW ))
+          DAY=$(( ( (WEEK - 1) * 5 + DOW - 1 ) % TOTAL_EXERCISES + 1 ))
           printf -v DAY_PADDED "%02d" "${DAY}"
           EXERCISE="exercises/day-${DAY_PADDED}.md"
 
           TITLE="$(grep -m1 '^# ' "${EXERCISE}" | sed 's/^# //')"
 
-          gh issue create \
+          ISSUE_URL="$(gh issue create \
             --title "tmux training: ${TITLE}" \
             --body-file "${EXERCISE}" \
-            --assignee "${GITHUB_REPOSITORY_OWNER}"
+            --assignee "${GITHUB_REPOSITORY_OWNER}")"
+
+          echo "url=${ISSUE_URL}" >> "$GITHUB_OUTPUT"
+          echo "title=${TITLE}" >> "$GITHUB_OUTPUT"
+
+      - name: Send Telegram notification
+        if: steps.time.outputs.run == 'true' && steps.issue.outputs.url != ''
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        shell: bash
+        run: |
+          TODAY="$(TZ=Europe/Berlin date '+%A, %d %B')"
+          MESSAGE="🖥 *tmux training — ${TODAY}*%0A%0A*${{ steps.issue.outputs.title }}*%0A%0A${{ steps.issue.outputs.url }}"
+          curl -fsSL \
+            "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT_ID}" \
+            -d "text=${MESSAGE}" \
+            -d "parse_mode=Markdown" \
+            -d "disable_web_page_preview=false"
