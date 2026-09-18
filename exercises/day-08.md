@@ -31,8 +31,24 @@ tmux switch -t infra
 tmux attach -t notes
 ```
 
+## Check
+
+```text
+session_exists  work
+session_exists  infra
+session_exists  notes
+```
+
 ## Completion goal
 
 Switch between all three sessions using only
 `Ctrl-b s`, `Ctrl-b (`, and `Ctrl-b )` — no detach,
 no shell commands.
+
+## Check
+
+```text
+session_exists  work
+session_exists  infra
+session_exists  notes
+```

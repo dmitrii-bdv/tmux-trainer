@@ -43,3 +43,10 @@ tmux show-options -g status-bg
 Reload your config and confirm that the status bar shows
 your session name on the left and `user@host HH:MM date`
 on the right.
+
+## Check
+
+```text
+option_set  status-left-length 20
+option_set  status-right-length 50
+```

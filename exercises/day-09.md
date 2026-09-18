@@ -42,3 +42,10 @@ Ctrl-b :setw synchronize-panes off
 Run `date` simultaneously across all four panes, then
 disable synchronization and run different commands in
 each pane independently.
+
+## Check
+
+```text
+session_exists  sync
+pane_count      sync 4
+```

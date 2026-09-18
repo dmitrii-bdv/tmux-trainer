@@ -12,10 +12,13 @@ and prints the exercise to stdout.
 ### Usage
 
 ```bash
-./scripts/tmux-trainer          # today's exercise (auto-selected)
-./scripts/tmux-trainer 7        # a specific exercise by number
-./scripts/tmux-trainer done     # mark today's exercise as completed
-./scripts/tmux-trainer cheat    # shortcuts from exercises 1 to today
+./scripts/tmux-trainer            # today's exercise (SRS queue first)
+./scripts/tmux-trainer 7          # a specific exercise by number
+./scripts/tmux-trainer done       # mark completed, advance SRS interval
+./scripts/tmux-trainer skip       # queue for review tomorrow (SM-2)
+./scripts/tmux-trainer check      # verify today's tmux state
+./scripts/tmux-trainer check 12   # verify a specific day's state
+./scripts/tmux-trainer cheat      # shortcuts from exercises 1 to today
 ./scripts/tmux-trainer cheat --all  # shortcuts from all exercises
 ```
 
@@ -96,6 +99,99 @@ Badge log lines look like:
 2026-09-18 badge first-done
 2026-09-25 badge first-week
 ```
+
+### Spaced repetition (SM-2)
+
+`tmux-trainer skip` flags the current exercise for spaced review.
+The script re-surfaces it on an SM-2 schedule:
+
+| Consecutive passes | Next review |
+| --- | --- |
+| 0 (just skipped) | tomorrow |
+| 1 | 3 days later |
+| 2 | 7 days later |
+| 3+ | 21 days later |
+
+Calling `skip` again after any number of passes resets the
+interval back to 1 day.
+
+When reviews are due, `tmux-trainer` (no args) shows the
+oldest-due exercise before the calendar exercise. The header
+shows how many reviews are pending and the current interval:
+
+```text
+📚 SRS review (2 due)  ·  interval 3d → 7d on pass
+🔥 4-day streak  ·  [████░] 4/5 this week
+```
+
+After calling `done` on a review, the interval advances. After
+calling `skip`, it resets to 1 day.
+
+SRS state is stored in a tab-separated file separate from the
+main log:
+
+```text
+~/.local/share/tmux-trainer/srs
+```
+
+Format: `EXERCISE_PAD<TAB>LAST_DATE<TAB>REPS`
+
+```text
+03 2026-09-16 0
+12 2026-09-14 2
+```
+
+Only exercises you explicitly skip enter the queue. Completing
+a calendar exercise via `done` does not add it to SRS — the
+queue stays focused on exercises you actually struggled with.
+
+### Live state verification
+
+`tmux-trainer check` reads the `## Check` section of the current
+exercise and verifies your actual tmux state against it:
+
+```text
+$ tmux-trainer check
+Checking day 04 — Multi-Session Workflow
+
+  ✓ session debug exists
+  ✓ window kube exists in debug
+  ✓ window aws exists in debug
+  ✗ window logs exists in debug   ← not found
+
+1 assertion failed
+```
+
+Pass a day number to check a specific exercise:
+
+```bash
+tmux-trainer check 12
+```
+
+Each exercise file has a `## Check` section with a fenced
+` ```text ` block listing assertions, one per line:
+
+```text
+session_exists  debug
+window_named    debug kube
+window_named    debug aws
+window_named    debug logs
+```
+
+**Assertion types:**
+
+| Type | Arguments | Checks |
+| --- | --- | --- |
+| `session_exists` | `name` | session is running |
+| `window_count` | `session count` | exact window count |
+| `window_named` | `session name` | window with that name exists |
+| `pane_count` | `session:window count` | exact pane count in window |
+| `pane_running` | `session:window cmd` | pane running a process |
+| `option_set` | `option value` | global tmux option value |
+| `file_exists` | `path` | file or directory exists |
+
+Exercises 07 and 13 have no `## Check` section — they focus on
+concepts with no structural state to verify.
 
 ### Cheat sheet
 

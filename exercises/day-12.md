@@ -45,3 +45,13 @@ Run it:
 Run the script, verify all three windows and both panes
 in the git window are set up, then kill the session and
 run it again from scratch.
+
+## Check
+
+```text
+session_exists  dev
+window_named    dev editor
+window_named    dev shell
+window_named    dev git
+pane_count      dev:git 2
+```

@@ -48,3 +48,12 @@ Ctrl-b z
 ## Completion goal
 
 Spend at least ten minutes working entirely inside the `debug` tmux session.
+
+## Check
+
+```text
+session_exists  debug
+window_named    debug kube
+window_named    debug aws
+window_named    debug logs
+```

@@ -45,3 +45,10 @@ tmux select-layout -t layouts tiled
 
 Cycle through all five layouts at least twice without
 touching the mouse or resizing panes manually.
+
+## Check
+
+```text
+session_exists  layouts
+pane_count      layouts 3
+```

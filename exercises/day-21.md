@@ -101,3 +101,10 @@ Confirm both pane widths with:
 tmux display-message -t sizes:demo.0 '#{pane_width}'
 tmux display-message -t sizes:demo.1 '#{pane_width}'
 ```
+
+## Check
+
+```text
+session_exists  sizes
+pane_count      sizes:demo 3
+```

@@ -8,15 +8,6 @@ Effort: [S] hours · [M] days · [L] week+
 
 ## Progress tracking
 
-⭐ **Spaced repetition re-queue** [M] — pure Bash
-Flag exercises the user skipped or marked incomplete, then
-re-surface them on a schedule derived from the SM-2
-algorithm: 1 day → 3 days → 7 days → 21 days after each
-correct recall. Wrong answer resets the interval to 0.
-Research on shortcut learning (KeyCombiner, Anki) shows this
-produces significantly better long-term retention than fixed
-weekly repetition. Requires the state file above.
-
 **Deck-size guardrail** [S] — pure Bash
 Warn when more than 10 outstanding exercises are queued for
 review. Motor-skill research shows consolidation fails when
@@ -26,47 +17,6 @@ session; 5–10 is the effective ceiling.
 ---
 
 ## Exercise verification
-
-⭐ **`tmux-trainer check` subcommand** [M] — pure Bash
-After completing an exercise, `./scripts/tmux-trainer check`
-verifies the completion goal using live tmux state. Each
-exercise can carry a `## Check` section with assertions:
-
-```text
-session_exists training
-window_count   training 4
-window_named   training kube
-pane_count     training:kube 2
-pane_running   training:kube.0 watch
-```
-
-Use these tmux queries to implement assertions:
-
-```bash
-# session and window existence
-tmux list-sessions -F '#{session_name}'
-tmux list-windows -t SESSION -F '#{window_name}'
-
-# pane counts and running commands
-tmux list-panes -t SESSION:WINDOW \
-  -F '#{pane_index} #{pane_current_command}'
-tmux display-message -p -t SESSION:WINDOW.PANE \
-  '#{pane_current_command}'
-
-# option values (day 10 / day 19 checks)
-tmux show-options -g history-limit
-tmux show-options -g mouse
-
-# key bindings (day 10 check)
-tmux list-keys -N   # keys with notes only
-```
-
-**Important limitation**: tmux exposes no `last_key` format
-variable and no key-press history. Behavioral verification
-(did you use `Ctrl-b` rather than clicking) is not possible
-via tmux introspection alone. Structural checks (does the
-session/window/pane exist, what command is running) are
-sufficient for most exercises.
 
 **Pane-content assertions** [M] — pure Bash
 `tmux capture-pane -t TARGET -p` captures visible pane text.
@@ -203,3 +153,18 @@ survive re-runs of the same day.
 Prints all `Ctrl-b` shortcuts from exercises 1 to today,
 grouped by day, extracted live from the exercise files.
 `--all` flag shows every exercise regardless of today's day.
+
+**Live state verification — `tmux-trainer check`** [M]
+Reads the `## Check` section from the exercise file and
+verifies actual tmux state using 7 assertion types:
+`session_exists`, `window_count`, `window_named`,
+`pane_count`, `pane_running`, `option_set`, `file_exists`.
+`## Check` sections added to 22 of 24 exercises (07 and 13
+have no structural state to verify).
+
+**Spaced repetition — `tmux-trainer skip`** [M]
+SM-2 intervals: 1 → 3 → 7 → 21 days after each correct
+recall; wrong answer resets to 1 day. Only explicitly-skipped
+exercises enter the queue. `done` advances the interval for
+queued exercises. SRS state in `~/.local/share/tmux-trainer/srs`.
+Queue shown before calendar exercise when reviews are due.

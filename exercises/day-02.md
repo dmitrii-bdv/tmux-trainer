@@ -27,3 +27,14 @@ Ctrl-b w       window selector
 ## Completion goal
 
 Move through all four windows twice without using iTerm2 tabs or the mouse.
+
+## Check
+
+```text
+session_exists  training
+window_count    training 4
+window_named    training shell
+window_named    training kubernetes
+window_named    training terraform
+window_named    training logs
+```

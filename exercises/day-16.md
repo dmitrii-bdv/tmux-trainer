@@ -47,3 +47,12 @@ machine.
 Run the script, verify each window lands in its repo
 and shows git status, then kill and recreate the
 session without editing the script.
+
+## Check
+
+```text
+session_exists  sre
+window_named    sre repo-1
+window_named    sre repo-2
+window_named    sre repo-3
+```

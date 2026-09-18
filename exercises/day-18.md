@@ -37,3 +37,13 @@ tmux attach -t restored
 Save a snapshot of one session, kill it, and rebuild it
 manually from the snapshot file — no copy-paste from
 history.
+
+## Check
+
+```text
+file_exists     /tmp/tmux-snapshot.txt
+session_exists  restored
+window_named    restored shell
+window_named    restored kube
+window_named    restored logs
+```

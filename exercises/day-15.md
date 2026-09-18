@@ -41,3 +41,9 @@ Ctrl-b :pipe-pane
 
 Run the loop, capture the full scrollback to a file,
 and verify all 20 lines are present in the file.
+
+## Check
+
+```text
+file_exists  /tmp/pane-dump.txt
+```

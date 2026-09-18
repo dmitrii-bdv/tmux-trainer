@@ -117,3 +117,10 @@ share the right column with equal height.
 3. Deliberately break the split sequence (e.g., target
    the wrong pane index) and observe how the layout
    changes — then fix it.
+
+## Check
+
+```text
+session_exists  layout
+pane_count      layout:dev 4
+```

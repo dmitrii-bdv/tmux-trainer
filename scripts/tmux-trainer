@@ -8,6 +8,10 @@ LOG_FILE="${LOG_DIR}/log"
 
 TOTAL_EXERCISES=$(ls "${EXERCISE_DIR}"/day-*.md 2>/dev/null | wc -l | tr -d ' ')
 
+SRS_FILE="${LOG_DIR}/srs"
+CURRENT_FILE="${LOG_DIR}/current"
+SRS_INTERVALS=(1 3 7 21)
+
 # ── portable date helpers ──────────────────────────────────────────────────
 
 _today() { date +%Y-%m-%d; }
@@ -26,6 +30,15 @@ _date_sub() {  # subtract N days from YYYY-MM-DD
     date -d "${d} - ${n} days" +%Y-%m-%d
   else
     date -jf "%Y-%m-%d" -v-${n}d "${d}" +%Y-%m-%d
+  fi
+}
+
+_date_add() {  # add N days to YYYY-MM-DD
+  local d="$1" n="$2"
+  if date --version >/dev/null 2>&1; then
+    date -d "${d} + ${n} days" +%Y-%m-%d
+  else
+    date -jf "%Y-%m-%d" -v+${n}d "${d}" +%Y-%m-%d
   fi
 }
 
@@ -48,10 +61,16 @@ _log_append() {  # _log_append DATE FIELD STATUS
   echo "$1 $2 $3" >> "${LOG_FILE}"
 }
 
-_today_status() {
+_today_status() {  # optional: _today_status PAD — scope to a specific exercise
+  local pad="${1:-}"
   [[ -f "${LOG_FILE}" ]] || { echo "none"; return; }
-  local last
-  last="$(grep "^$(_today) " "${LOG_FILE}" | tail -1)" || true
+  local last pattern
+  if [[ -n "${pad}" ]]; then
+    pattern="^$(_today) ${pad} "
+  else
+    pattern="^$(_today) "
+  fi
+  last="$(grep "${pattern}" "${LOG_FILE}" | tail -1)" || true
   if   [[ "${last}" == *"completed"* ]]; then echo "completed"
   elif [[ "${last}" == *"skipped"*   ]]; then echo "skipped"
   else                                         echo "none"
@@ -152,6 +171,193 @@ _check_badges() {
   fi
 }
 
+# ── spaced repetition (SM-2) ──────────────────────────────────────────────
+# SRS_FILE: tab-separated, one line per exercise: PAD<TAB>LAST_DATE<TAB>REPS
+# REPS = consecutive correct recalls. Interval = SRS_INTERVALS[min(reps,3)].
+# Only exercises explicitly skipped enter the queue; done advances them.
+
+_srs_update() {  # _srs_update PAD CORRECT(1=pass,0=fail)
+  local pad="$1" correct="$2"
+  _ensure_log
+
+  local existing_reps=""
+  [[ -f "${SRS_FILE}" ]] \
+    && existing_reps="$(awk -v p="${pad}" '$1==p{print $3}' "${SRS_FILE}")"
+
+  # Correct recall on an exercise not yet in the queue: nothing to track
+  [[ "${correct}" -eq 1 && -z "${existing_reps}" ]] && return
+
+  local reps="${existing_reps:-0}"
+  if [[ "${correct}" -eq 1 ]]; then
+    [[ "${reps}" -lt 3 ]] && reps=$(( reps + 1 )) || true
+  else
+    reps=0
+  fi
+
+  local today; today="$(_today)"
+  local tmp; tmp="$(mktemp)"
+
+  if [[ -n "${existing_reps}" && -f "${SRS_FILE}" ]]; then
+    awk -v p="${pad}" -v d="${today}" -v r="${reps}" \
+      '$1==p{print p"\t"d"\t"r; next} {print}' "${SRS_FILE}" > "${tmp}"
+  else
+    [[ -f "${SRS_FILE}" ]] && cat "${SRS_FILE}" > "${tmp}" || true
+    printf "%s\t%s\t%s\n" "${pad}" "${today}" "${reps}" >> "${tmp}"
+  fi
+  mv "${tmp}" "${SRS_FILE}"
+}
+
+_srs_due_list() {  # prints zero-padded exercise numbers due today, oldest first
+  [[ -f "${SRS_FILE}" ]] || return
+  local today; today="$(_today)"
+  while IFS=$'\t' read -r pad last_date reps; do
+    local idx interval due_date
+    idx=$(( reps < 4 ? reps : 3 ))
+    interval="${SRS_INTERVALS[${idx}]}"
+    due_date="$(_date_add "${last_date}" "${interval}")"
+    [[ "${due_date}" < "${today}" || "${due_date}" == "${today}" ]] \
+      && printf "%s %s\n" "${pad}" "${due_date}"
+  done < "${SRS_FILE}" | sort -k2 | awk '{print $1}'
+}
+
+_srs_reviews_pending() {
+  _srs_due_list | wc -l | tr -d ' '
+}
+
+# ── assertion engine (used by check subcommand) ───────────────────────────
+
+_assert() {
+  local type="$1" pass=0 msg=""
+  shift
+  case "${type}" in
+    session_exists)
+      if tmux list-sessions -F '#{session_name}' 2>/dev/null | grep -qx "$1"; then
+        pass=1; msg="session '$1' exists"
+      else
+        msg="session '$1' not found"
+      fi
+      ;;
+    window_count)
+      local actual
+      actual="$(tmux list-windows -t "$1" 2>/dev/null | wc -l | tr -d ' ')" || actual=0
+      if [[ "${actual}" -eq "$2" ]]; then
+        pass=1; msg="'$1' has ${actual} window(s)"
+      else
+        msg="'$1' has ${actual} window(s), expected $2"
+      fi
+      ;;
+    window_named)
+      if tmux list-windows -t "$1" -F '#{window_name}' 2>/dev/null | grep -qx "$2"; then
+        pass=1; msg="window '$2' found in '$1'"
+      else
+        msg="window '$2' not found in '$1'"
+      fi
+      ;;
+    pane_count)
+      local actual
+      actual="$(tmux list-panes -t "$1" 2>/dev/null | wc -l | tr -d ' ')" || actual=0
+      if [[ "${actual}" -eq "$2" ]]; then
+        pass=1; msg="'$1' has ${actual} pane(s)"
+      else
+        msg="'$1' has ${actual} pane(s), expected $2"
+      fi
+      ;;
+    pane_running)
+      local actual
+      actual="$(tmux display-message -p -t "$1" '#{pane_current_command}' 2>/dev/null)" \
+        || actual=""
+      if [[ "${actual}" == "$2" ]]; then
+        pass=1; msg="'$1' is running '$2'"
+      else
+        msg="'$1' running '${actual}', expected '$2'"
+      fi
+      ;;
+    option_set)
+      local actual
+      actual="$(tmux show-options -gv "$1" 2>/dev/null)" || actual=""
+      if [[ "${actual}" == "$2" ]]; then
+        pass=1; msg="$1 = $2"
+      else
+        msg="$1 = '${actual}', expected '$2'"
+      fi
+      ;;
+    file_exists)
+      local path="${1/#\~/${HOME}}"
+      if [[ -f "${path}" ]]; then
+        pass=1; msg="file exists: ${path}"
+      else
+        msg="file not found: ${path}"
+      fi
+      ;;
+    *)
+      msg="unknown assertion type: ${type}"
+      ;;
+  esac
+
+  if [[ "${pass}" -eq 1 ]]; then
+    printf "  ✓ %s\n" "${msg}"
+  else
+    printf "  ✗ %s\n" "${msg}"
+    return 1
+  fi
+}
+
+# ── subcommand: check ──────────────────────────────────────────────────────
+
+if [[ "${1:-}" == "check" ]]; then
+  if [[ -n "${2:-}" ]] && [[ "${2}" =~ ^[0-9]+$ ]]; then
+    CHECK_DAY="${2}"
+  else
+    CHECK_DAY="$(_current_day)"
+  fi
+  printf -v CHECK_PAD "%02d" "${CHECK_DAY}"
+  CHECK_FILE="${EXERCISE_DIR}/day-${CHECK_PAD}.md"
+
+  if [[ ! -f "${CHECK_FILE}" ]]; then
+    echo "Exercise not found: ${CHECK_FILE}" >&2; exit 1
+  fi
+
+  CHECK_TITLE="$(grep -m1 '^# ' "${CHECK_FILE}" | sed 's/^# //')"
+
+  # Extract assertions from the ```text block inside ## Check section
+  CHECK_ASSERTIONS="$(awk '
+    /^## Check$/    { sec=1; next }
+    /^## /          { sec=0; blk=0; next }
+    sec && /^```text/ { blk=1; next }
+    sec && /^```/   { blk=0; next }
+    sec && blk && NF { print }
+  ' "${CHECK_FILE}")"
+
+  if [[ -z "${CHECK_ASSERTIONS}" ]]; then
+    echo "No check defined for: ${CHECK_TITLE}"
+    exit 0
+  fi
+
+  echo
+  echo "Checking: ${CHECK_TITLE}"
+  echo
+
+  chk_pass=0; chk_fail=0
+  while IFS= read -r chk_line; do
+    [[ -z "${chk_line}" ]] && continue
+    # shellcheck disable=SC2086
+    if _assert ${chk_line}; then
+      (( chk_pass++ )) || true
+    else
+      (( chk_fail++ )) || true
+    fi
+  done <<< "${CHECK_ASSERTIONS}"
+
+  echo
+  if [[ "${chk_fail}" -eq 0 ]]; then
+    printf "All %d checks passed ✓\n" "${chk_pass}"
+  else
+    printf "%d/%d checks passed\n" "${chk_pass}" "$(( chk_pass + chk_fail ))"
+    exit 1
+  fi
+  exit 0
+fi
+
 # ── subcommand: cheat ─────────────────────────────────────────────────────
 
 if [[ "${1:-}" == "cheat" ]]; then
@@ -190,14 +396,24 @@ fi
 # ── subcommand: done ───────────────────────────────────────────────────────
 
 if [[ "${1:-}" == "done" ]]; then
-  DAY="$(_current_day)"
-  printf -v DAY_PADDED "%02d" "${DAY}"
-  if [[ "$(_today_status)" == "completed" ]]; then
+  if [[ -f "${CURRENT_FILE}" ]]; then
+    DAY_PADDED="$(cat "${CURRENT_FILE}")"
+    DAY=$(( 10#${DAY_PADDED} ))
+  else
+    DAY="$(_current_day)"
+    printf -v DAY_PADDED "%02d" "${DAY}"
+  fi
+  if [[ "$(_today_status "${DAY_PADDED}")" == "completed" ]]; then
     echo "Day ${DAY_PADDED} already marked done today."
   else
     _log_append "$(_today)" "${DAY_PADDED}" "completed"
+    _srs_update "${DAY_PADDED}" 1
     STREAK="$(_streak)"
     echo "✓ Day ${DAY_PADDED} marked as completed"
+    PENDING="$(_srs_reviews_pending)"
+    if [[ "${PENDING}" -gt 0 ]]; then
+      printf "📚 %d review(s) still due — run \`tmux-trainer\` to continue\n" "${PENDING}"
+    fi
     if [[ "${STREAK}" -gt 0 ]]; then
       printf "🔥 %d-day streak  ·  %s\n" "${STREAK}" "$(_week_bar)"
     else
@@ -208,12 +424,37 @@ if [[ "${1:-}" == "done" ]]; then
   exit 0
 fi
 
+# ── subcommand: skip ───────────────────────────────────────────────────────
+
+if [[ "${1:-}" == "skip" ]]; then
+  if [[ -n "${2:-}" ]] && [[ "${2}" =~ ^[0-9]+$ ]]; then
+    printf -v DAY_PADDED "%02d" "${2}"
+  elif [[ -f "${CURRENT_FILE}" ]]; then
+    DAY_PADDED="$(cat "${CURRENT_FILE}")"
+  else
+    printf -v DAY_PADDED "%02d" "$(_current_day)"
+  fi
+  _log_append "$(_today)" "${DAY_PADDED}" "skipped"
+  _srs_update "${DAY_PADDED}" 0
+  echo "✗ Day ${DAY_PADDED} skipped — queued for review tomorrow"
+  exit 0
+fi
+
 # ── select exercise ────────────────────────────────────────────────────────
+
+SRS_REVIEW=""
 
 if [[ $# -gt 0 ]]; then
   DAY="$1"
 else
-  DAY="$(_current_day)"
+  DUE_LIST="$(_srs_due_list)"
+  if [[ -n "${DUE_LIST}" ]]; then
+    FIRST_DUE="$(echo "${DUE_LIST}" | head -1)"
+    DAY=$(( 10#${FIRST_DUE} ))
+    SRS_REVIEW="1"
+  else
+    DAY="$(_current_day)"
+  fi
 fi
 
 if [[ "${DAY}" -lt 1 || "${DAY}" -gt "${TOTAL_EXERCISES}" ]]; then
@@ -238,6 +479,10 @@ if [[ ! -f "${TEMP_EXERCISE}" ]] || [[ "${EXERCISE}" -nt "${TEMP_EXERCISE}" ]]; 
   cp "${EXERCISE}" "${TEMP_EXERCISE}"
 fi
 
+# Record which exercise is active so done/skip operate on the right one
+_ensure_log
+echo "${DAY_PADDED}" > "${CURRENT_FILE}"
+
 # ── macOS notification ─────────────────────────────────────────────────────
 
 TITLE="$(grep -m1 '^# ' "${EXERCISE}" | sed 's/^# //')"
@@ -256,6 +501,20 @@ echo "${TITLE}"
 echo
 
 STREAK="$(_streak)"
+PENDING="$(_srs_reviews_pending)"
+
+if [[ -n "${SRS_REVIEW}" ]]; then
+  srs_reps="$(awk -v p="${DAY_PADDED}" '$1==p{print $3}' "${SRS_FILE}" 2>/dev/null)"
+  srs_reps="${srs_reps:-0}"
+  srs_cur="${SRS_INTERVALS[$(( srs_reps < 4 ? srs_reps : 3 ))]}"
+  srs_next_idx=$(( srs_reps < 3 ? srs_reps + 1 : 3 ))
+  srs_next="${SRS_INTERVALS[${srs_next_idx}]}"
+  printf "📚 SRS review (%d due)  ·  interval %dd → %dd on pass\n" \
+    "${PENDING}" "${srs_cur}" "${srs_next}"
+elif [[ "${PENDING}" -gt 0 ]]; then
+  printf "📚 %d review(s) due — run \`tmux-trainer\` after this one\n" "${PENDING}"
+fi
+
 if [[ "${STREAK}" -gt 0 ]]; then
   printf "🔥 %d-day streak  ·  %s\n" "${STREAK}" "$(_week_bar)"
 else
@@ -266,10 +525,14 @@ echo
 cat "${TEMP_EXERCISE}"
 echo
 
-STATUS="$(_today_status)"
+STATUS="$(_today_status "${DAY_PADDED}")"
 printf "  → annotate freely: %s\n" "${TEMP_EXERCISE}"
 if [[ "${STATUS}" != "completed" ]]; then
-  echo "  → run \`tmux-trainer done\` when you finish"
+  if [[ -n "${SRS_REVIEW}" ]]; then
+    echo "  → \`tmux-trainer done\` to pass  ·  \`tmux-trainer skip\` to re-queue"
+  else
+    echo "  → \`tmux-trainer done\` when finished  ·  \`tmux-trainer skip\` to queue for later"
+  fi
 fi
 echo
 

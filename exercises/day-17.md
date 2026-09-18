@@ -42,3 +42,12 @@ Ctrl-b w   interactive window list
 Spend ten minutes doing real AWS or Terraform work
 entirely inside this session without opening a new
 terminal tab.
+
+## Check
+
+```text
+session_exists  cloud
+window_named    cloud aws
+window_named    cloud tf
+window_named    cloud logs
+```

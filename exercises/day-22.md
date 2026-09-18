@@ -89,3 +89,10 @@ tmux resize-pane  -t side:work.0 -x 25
 2. Label both panes using `pane-border-status`.
 3. Zoom the right pane, work for a moment, then restore
    the full layout — all without touching the mouse.
+
+## Check
+
+```text
+session_exists  side
+pane_count      side:work 3
+```

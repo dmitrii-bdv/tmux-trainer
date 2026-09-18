@@ -41,3 +41,10 @@ Ctrl-b r
 
 Add the config above, reload it live inside a running
 session, and confirm the reload message appears.
+
+## Check
+
+```text
+option_set  history-limit 10000
+option_set  mouse on
+```

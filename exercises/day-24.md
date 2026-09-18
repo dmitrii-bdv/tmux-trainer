@@ -172,3 +172,10 @@ tail -f app.log      /  watch kubectl rollout status
    confirm it re-attaches without creating duplicates.
 3. Add `.tmux-session` to a project with two commands
    and confirm both CLI panes start automatically.
+
+## Check
+
+```text
+session_exists  myapp
+pane_count      myapp:dev 4
+```

@@ -38,3 +38,10 @@ tmux list-keys                     # all key bindings
 Make three distinct config changes, reload after each
 one, and verify each change without restarting any
 session.
+
+## Check
+
+```text
+option_set  history-limit 10000
+option_set  mouse on
+```

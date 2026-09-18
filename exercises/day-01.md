@@ -43,3 +43,9 @@ Repeat this cycle three times without checking a cheat sheet:
 ```text
 create → detach → list → attach
 ```
+
+## Check
+
+```text
+session_exists  training
+```

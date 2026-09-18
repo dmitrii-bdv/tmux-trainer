@@ -47,3 +47,9 @@ ls -la ~
 
 Copy a filename from `ls -la ~` output and paste it
 into a new command without using the mouse.
+
+## Check
+
+```text
+option_set  mode-keys vi
+```

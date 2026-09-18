@@ -46,3 +46,10 @@ git status
 ## Completion goal
 
 Navigate through all panes and zoom each pane once without clicking.
+
+## Check
+
+```text
+session_exists  training
+pane_count      training 3
+```

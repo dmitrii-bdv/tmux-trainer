@@ -33,3 +33,14 @@ Requirements:
 Finish the full layout in under five minutes. If it
 takes longer, note which steps slowed you down and
 repeat tomorrow.
+
+## Check
+
+```text
+session_exists  sre-final
+window_named    sre-final kube
+window_named    sre-final aws
+window_named    sre-final tf
+window_named    sre-final logs
+pane_count      sre-final:logs 2
+```

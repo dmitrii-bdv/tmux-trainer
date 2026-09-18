@@ -36,3 +36,12 @@ tmux kill-session -t recovery-test
 ## Completion goal
 
 Recover the running process after closing iTerm2 without restarting it.
+
+## Check
+
+Run this before the final `tmux kill-session` cleanup step.
+
+```text
+session_exists  recovery-test
+pane_running    recovery-test watch
+```
