@@ -3,22 +3,217 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 EXERCISE_DIR="${ROOT_DIR}/exercises"
+LOG_DIR="${HOME}/.local/share/tmux-trainer"
+LOG_FILE="${LOG_DIR}/log"
+
 TOTAL_EXERCISES=$(ls "${EXERCISE_DIR}"/day-*.md 2>/dev/null | wc -l | tr -d ' ')
+
+# ── portable date helpers ──────────────────────────────────────────────────
+
+_today() { date +%Y-%m-%d; }
+
+_date_dow() {  # day-of-week for a YYYY-MM-DD string; 1=Mon … 7=Sun
+  if date --version >/dev/null 2>&1; then
+    date -d "$1" +%u
+  else
+    date -jf "%Y-%m-%d" "$1" +%u
+  fi
+}
+
+_date_sub() {  # subtract N days from YYYY-MM-DD
+  local d="$1" n="$2"
+  if date --version >/dev/null 2>&1; then
+    date -d "${d} - ${n} days" +%Y-%m-%d
+  else
+    date -jf "%Y-%m-%d" -v-${n}d "${d}" +%Y-%m-%d
+  fi
+}
+
+# ── exercise selection ─────────────────────────────────────────────────────
+
+_current_day() {
+  local week dow
+  week="$(date +%V)"
+  dow="$(date +%u)"
+  [[ "${dow}" -gt 5 ]] && dow=1
+  echo $(( ( (week - 1) * 5 + dow - 1 ) % TOTAL_EXERCISES + 1 ))
+}
+
+# ── state file ─────────────────────────────────────────────────────────────
+
+_ensure_log() { mkdir -p "${LOG_DIR}"; }
+
+_log_append() {  # _log_append DATE FIELD STATUS
+  _ensure_log
+  echo "$1 $2 $3" >> "${LOG_FILE}"
+}
+
+_today_status() {
+  [[ -f "${LOG_FILE}" ]] || { echo "none"; return; }
+  local last
+  last="$(grep "^$(_today) " "${LOG_FILE}" | tail -1)" || true
+  if   [[ "${last}" == *"completed"* ]]; then echo "completed"
+  elif [[ "${last}" == *"skipped"*   ]]; then echo "skipped"
+  else                                         echo "none"
+  fi
+}
+
+# ── streak ─────────────────────────────────────────────────────────────────
+
+_streak() {
+  [[ -f "${LOG_FILE}" ]] || { echo 0; return; }
+  local streak=0 check
+  check="$(_today)"
+  for (( i=0; i<200; i++ )); do
+    local dow
+    dow="$(_date_dow "${check}")"
+    if [[ "${dow}" -le 5 ]]; then
+      if grep -q "^${check} .* completed$" "${LOG_FILE}" 2>/dev/null; then
+        (( streak++ )) || true
+      else
+        break
+      fi
+    fi
+    check="$(_date_sub "${check}" 1)"
+  done
+  echo "${streak}"
+}
+
+# ── week progress ──────────────────────────────────────────────────────────
+
+_week_anchor() {
+  # Prints: ANCHOR DAYS_TO_SHOW
+  # ANCHOR = today (weekday) or last Friday (weekend)
+  local anchor dow_now days_to_show
+  anchor="$(_today)"
+  dow_now="$(date +%u)"
+  if [[ "${dow_now}" -gt 5 ]]; then
+    anchor="$(_date_sub "${anchor}" $(( dow_now - 5 )))"
+    days_to_show=5
+  else
+    days_to_show="${dow_now}"
+  fi
+  echo "${anchor} ${days_to_show}"
+}
+
+_week_completed_count() {
+  read -r anchor days_to_show <<< "$(_week_anchor)"
+  local completed=0
+  for (( d=1; d<=days_to_show; d++ )); do
+    local days_back=$(( days_to_show - d )) check_date
+    [[ "${days_back}" -eq 0 ]] && check_date="${anchor}" \
+                                || check_date="$(_date_sub "${anchor}" "${days_back}")"
+    [[ -f "${LOG_FILE}" ]] \
+      && grep -q "^${check_date} .* completed$" "${LOG_FILE}" 2>/dev/null \
+      && (( completed++ )) || true
+  done
+  echo "${completed}"
+}
+
+_week_bar() {
+  local completed bar=""
+  completed="$(_week_completed_count)"
+  for (( i=1; i<=5; i++ )); do
+    [[ $i -le $completed ]] && bar+="█" || bar+="░"
+  done
+  printf "[%s] %d/5 this week" "${bar}" "${completed}"
+}
+
+# ── milestone badges ───────────────────────────────────────────────────────
+
+_check_badges() {
+  # first-done: first ever completion
+  if ! grep -q " badge first-done$" "${LOG_FILE}" 2>/dev/null; then
+    _log_append "$(_today)" "badge" "first-done"
+    echo "🏅 Badge unlocked: First completion"
+  fi
+
+  # first-week: first time all 5 weekdays completed in a single week
+  if ! grep -q " badge first-week$" "${LOG_FILE}" 2>/dev/null; then
+    if [[ "$(_week_completed_count)" -ge 5 ]]; then
+      _log_append "$(_today)" "badge" "first-week"
+      echo "🏅 Badge unlocked: First full week"
+    fi
+  fi
+
+  # first-cycle: every exercise completed at least once
+  if ! grep -q " badge first-cycle$" "${LOG_FILE}" 2>/dev/null; then
+    local all_done=1
+    for (( n=1; n<=TOTAL_EXERCISES; n++ )); do
+      local p; printf -v p "%02d" "${n}"
+      if ! grep -q "^.* ${p} completed$" "${LOG_FILE}" 2>/dev/null; then
+        all_done=0; break
+      fi
+    done
+    if [[ "${all_done}" -eq 1 ]]; then
+      _log_append "$(_today)" "badge" "first-cycle"
+      echo "🏅 Badge unlocked: First full cycle — all ${TOTAL_EXERCISES} exercises done!"
+    fi
+  fi
+}
+
+# ── subcommand: cheat ─────────────────────────────────────────────────────
+
+if [[ "${1:-}" == "cheat" ]]; then
+  [[ "${2:-}" == "--all" ]] && MAX_DAY="${TOTAL_EXERCISES}" \
+                             || MAX_DAY="$(_current_day)"
+  echo
+  printf "=== tmux cheat sheet (days 1–%d) ===\n" "${MAX_DAY}"
+
+  for (( n=1; n<=MAX_DAY; n++ )); do
+    local_p=""; printf -v local_p "%02d" "${n}"
+    local_f="${EXERCISE_DIR}/day-${local_p}.md"
+    [[ -f "${local_f}" ]] || continue
+
+    title="$(grep -m1 '^# ' "${local_f}" | sed 's/^# //')"
+
+    # Extract lines from ```text blocks that start with Ctrl-b.
+    # Those lines carry the shortcut and optional description as written
+    # in the exercise (e.g. "Ctrl-b c       new window").
+    shortcuts="$(awk '
+      /^```text/ { in_block=1; next }
+      /^```/     { in_block=0; next }
+      in_block && /^Ctrl-b/ { print "  " $0 }
+    ' "${local_f}")"
+
+    if [[ -n "${shortcuts}" ]]; then
+      echo
+      echo "${title}"
+      echo "${shortcuts}"
+    fi
+  done
+
+  echo
+  exit 0
+fi
+
+# ── subcommand: done ───────────────────────────────────────────────────────
+
+if [[ "${1:-}" == "done" ]]; then
+  DAY="$(_current_day)"
+  printf -v DAY_PADDED "%02d" "${DAY}"
+  if [[ "$(_today_status)" == "completed" ]]; then
+    echo "Day ${DAY_PADDED} already marked done today."
+  else
+    _log_append "$(_today)" "${DAY_PADDED}" "completed"
+    STREAK="$(_streak)"
+    echo "✓ Day ${DAY_PADDED} marked as completed"
+    if [[ "${STREAK}" -gt 0 ]]; then
+      printf "🔥 %d-day streak  ·  %s\n" "${STREAK}" "$(_week_bar)"
+    else
+      echo "$(_week_bar)"
+    fi
+    _check_badges
+  fi
+  exit 0
+fi
+
+# ── select exercise ────────────────────────────────────────────────────────
 
 if [[ $# -gt 0 ]]; then
   DAY="$1"
 else
-  # Map ISO week + weekday to exercise 1-N where N = number of exercise files.
-  # Formula: ((week-1)*5 + dow-1) % N + 1
-  # Cycles through all exercises in order; adding a new day-NN.md file
-  # extends the cycle automatically.
-  # Weekends fall back to Monday (dow=1).
-  WEEK="$(date +%V)"
-  DOW="$(date +%u)"
-  if [[ "${DOW}" -gt 5 ]]; then
-    DOW=1
-  fi
-  DAY=$(( ( (WEEK - 1) * 5 + DOW - 1 ) % TOTAL_EXERCISES + 1 ))
+  DAY="$(_current_day)"
 fi
 
 if [[ "${DAY}" -lt 1 || "${DAY}" -gt "${TOTAL_EXERCISES}" ]]; then
@@ -34,6 +229,17 @@ if [[ ! -f "${EXERCISE}" ]]; then
   exit 1
 fi
 
+# ── temp copy (vimtutor pattern) ───────────────────────────────────────────
+# Copy to /tmp so annotations don't dirty the repo.
+# Refreshed only when the source file is newer than the copy.
+
+TEMP_EXERCISE="/tmp/tmux-trainer-day-${DAY_PADDED}.md"
+if [[ ! -f "${TEMP_EXERCISE}" ]] || [[ "${EXERCISE}" -nt "${TEMP_EXERCISE}" ]]; then
+  cp "${EXERCISE}" "${TEMP_EXERCISE}"
+fi
+
+# ── macOS notification ─────────────────────────────────────────────────────
+
 TITLE="$(grep -m1 '^# ' "${EXERCISE}" | sed 's/^# //')"
 SUMMARY="$(grep -m1 '^Goal:' "${EXERCISE}" | sed 's/^Goal:[[:space:]]*//')"
 NOTIFICATION="${SUMMARY:-Open the tmux exercise for today}"
@@ -42,22 +248,40 @@ if command -v osascript >/dev/null 2>&1; then
   osascript -e "display notification \"${NOTIFICATION}\" with title \"tmux trainer\" subtitle \"${TITLE}\""
 fi
 
+# ── display ────────────────────────────────────────────────────────────────
+
 echo
 echo "=== tmux trainer ==="
 echo "${TITLE}"
 echo
-cat "${EXERCISE}"
+
+STREAK="$(_streak)"
+if [[ "${STREAK}" -gt 0 ]]; then
+  printf "🔥 %d-day streak  ·  %s\n" "${STREAK}" "$(_week_bar)"
+else
+  echo "$(_week_bar)"
+fi
+
+echo
+cat "${TEMP_EXERCISE}"
 echo
 
-# Optional: open iTerm2 and show the exercise.
-# Set TMUX_TRAINER_OPEN_ITERM=1 in your shell environment to enable.
+STATUS="$(_today_status)"
+printf "  → annotate freely: %s\n" "${TEMP_EXERCISE}"
+if [[ "${STATUS}" != "completed" ]]; then
+  echo "  → run \`tmux-trainer done\` when you finish"
+fi
+echo
+
+# ── iTerm2 integration ─────────────────────────────────────────────────────
+
 if [[ "${TMUX_TRAINER_OPEN_ITERM:-0}" == "1" ]] && [[ -d "/Applications/iTerm.app" ]]; then
   osascript \
     -e 'tell application "iTerm"' \
     -e '  activate' \
     -e '  create window with default profile' \
     -e '  tell current session of current window' \
-    -e "    write text \"cd '${ROOT_DIR}' && cat '${EXERCISE}'\"" \
+    -e "    write text \"cd '${ROOT_DIR}' && cat '${TEMP_EXERCISE}'\"" \
     -e '  end tell' \
     -e 'end tell'
 fi

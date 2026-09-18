@@ -14,6 +14,9 @@ and prints the exercise to stdout.
 ```bash
 ./scripts/tmux-trainer          # today's exercise (auto-selected)
 ./scripts/tmux-trainer 7        # a specific exercise by number
+./scripts/tmux-trainer done     # mark today's exercise as completed
+./scripts/tmux-trainer cheat    # shortcuts from exercises 1 to today
+./scripts/tmux-trainer cheat --all  # shortcuts from all exercises
 ```
 
 ### How the exercise is selected
@@ -38,6 +41,108 @@ on the same day always returns the same exercise.
 
 The GitHub Actions workflow uses the same formula, so the issue
 created each morning matches what the local script would show.
+
+### Progress tracking
+
+Completions are recorded in an append-only log at:
+
+```text
+~/.local/share/tmux-trainer/log
+```
+
+Each line is one entry:
+
+```text
+2026-09-18 04 completed
+2026-09-17 03 completed
+2026-09-16 02 skipped
+```
+
+The file is human-readable and directly editable.
+
+**Streak counter** — every run shows consecutive completed weekdays:
+
+```text
+🔥 5-day streak  ·  [████░] 4/5 this week
+```
+
+**Week progress bar** — five blocks, one per weekday. Filled blocks
+are days where `done` was called. On weekends the bar shows the
+completed week.
+
+**`tmux-trainer done`** — appends a `completed` entry for today and
+prints the updated streak and bar. Intentionally manual so you decide
+when the exercise is actually finished:
+
+```text
+✓ Day 04 marked as completed
+🔥 5-day streak  ·  [████░] 4/5 this week
+```
+
+Running `done` twice on the same day is a no-op.
+
+**Milestone badges** — earned once, printed immediately after `done`,
+and stored in the log (`badge` lines):
+
+| Badge | Condition |
+| --- | --- |
+| First completion | First ever `done` call |
+| First full week | All 5 weekdays completed in a single week |
+| First full cycle | Every exercise completed at least once |
+
+Badge log lines look like:
+
+```text
+2026-09-18 badge first-done
+2026-09-25 badge first-week
+```
+
+### Cheat sheet
+
+`tmux-trainer cheat` prints all `Ctrl-b` shortcuts introduced in
+exercises 1 through today's exercise, grouped by day:
+
+```text
+=== tmux cheat sheet (days 1–8) ===
+
+Day 2 — Windows
+  Ctrl-b c       new window
+  Ctrl-b ,       rename window
+  ...
+
+Day 3 — Panes
+  Ctrl-b %       vertical split
+  ...
+```
+
+Shortcuts are extracted from the ` ```text ` blocks in each exercise
+file, so the cheat sheet always reflects the actual exercise content.
+
+Pass `--all` to include every exercise regardless of today's day:
+
+```bash
+./scripts/tmux-trainer cheat --all
+```
+
+### Working copy (vimtutor pattern)
+
+Each run copies the exercise to a temp file before displaying it:
+
+```text
+/tmp/tmux-trainer-day-NN.md
+```
+
+You can annotate it freely — cross off steps, add notes — without
+touching the repo. The copy is refreshed only when the source
+exercise file is newer, so your annotations survive re-runs of the
+same day.
+
+The path is printed at the end of every run:
+
+```text
+  → annotate freely: /tmp/tmux-trainer-day-04.md
+  → run `tmux-trainer done` when you finish
+```
 
 ### macOS notification
 

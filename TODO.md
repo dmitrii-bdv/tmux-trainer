@@ -8,25 +8,6 @@ Effort: [S] hours · [M] days · [L] week+
 
 ## Progress tracking
 
-⭐ **State file** [S] — pure Bash
-Track completions in an append-only log at
-`~/.local/share/tmux-trainer/log` — one line per run:
-
-```text
-2026-09-04 20 completed
-2026-09-05 20 skipped
-```
-
-This is the habitctl pattern: human-readable, directly
-editable, trivially parsed with `awk`. Everything else in
-this file depends on this existing first.
-
-**Streak counter** [S] — pure Bash
-Read the log and count consecutive `completed` days. Display
-on every run (`🔥 12-day streak`). Streaks are the single
-most effective retention mechanism in daily-habit tools
-(Duolingo, GitHub contributions, dijo, habitctl).
-
 ⭐ **Spaced repetition re-queue** [M] — pure Bash
 Flag exercises the user skipped or marked incomplete, then
 re-surface them on a schedule derived from the SM-2
@@ -41,10 +22,6 @@ Warn when more than 10 outstanding exercises are queued for
 review. Motor-skill research shows consolidation fails when
 the brain is overloaded with too many new patterns per
 session; 5–10 is the effective ceiling.
-
-**Week progress indicator** [S] — pure Bash
-Print a compact ASCII bar (`[████░] 4/5 this week`) on each
-run. Low effort, high motivation signal.
 
 ---
 
@@ -102,17 +79,6 @@ ran, confirm a `watch` process is visible, or check that
 
 ## CLI gamification
 
-**Completion flag** [S] — pure Bash
-`./scripts/tmux-trainer done` appends a `completed` entry to
-the log. Intentionally manual — the user decides when they
-are done, which forces honest self-assessment.
-
-**Milestone badges** [S] — pure Bash
-Print a one-line badge the first time a threshold fires:
-first completion, first full week, first full cycle. Store
-which badges fired in the log (one line each:
-`2026-09-04 badge first-week`). No server needed.
-
 **Timed mode for the final drill** [S] — pure Bash
 For day 20, record `time_start` when the exercise opens and
 `time_end` when `tmux-trainer done` is called. Print elapsed
@@ -122,19 +88,6 @@ completion goal.
 ---
 
 ## Content and curriculum
-
-⭐ **vimtutor-style exercise copy** [S] — pure Bash
-When displaying an exercise, open a temp copy
-(`/tmp/tmux-trainer-day-NN.md`) rather than the source file.
-The user can annotate it freely (cross off steps, add notes)
-without dirtying the repo. This is the pattern vimtutor uses
-to lower the activation barrier for experimentation.
-
-**Cheat sheet command** [S] — pure Bash
-`./scripts/tmux-trainer cheat` prints every shortcut
-introduced up to today's exercise in a compact table. Use
-`tmux list-keys -N` to cross-reference against what tmux
-actually has bound. Avoids mid-exercise web searches.
 
 **Random review drill** [M] — pure Bash
 `./scripts/tmux-trainer review` picks a random completed
@@ -185,7 +138,7 @@ and most Linux package managers.
 Add `completions/tmux-trainer.bash` and
 `completions/tmux-trainer.zsh` so `tmux-trainer <TAB>`
 completes subcommands (`check`, `done`, `review`, `cheat`,
-`menu`) and day numbers 1–20.
+`menu`) and day numbers 1–24.
 
 **Slack / Discord webhook reminder** [M] — pure Bash + curl
 Read `TMUX_TRAINER_WEBHOOK_URL` from the environment or
@@ -214,3 +167,39 @@ Package the trainer as a Homebrew formula for
 `brew install tmux-trainer`. Significant ongoing maintenance
 cost; only worth pursuing if the project gains external
 users.
+
+---
+
+## Done
+
+**State file** [S] — `~/.local/share/tmux-trainer/log`
+Append-only log, one line per run. Format:
+`YYYY-MM-DD DD completed|skipped`. Human-readable and
+directly editable. Foundation for all progress features.
+
+**Streak counter** [S]
+Counts consecutive completed weekdays backwards from today.
+Weekends are skipped transparently. Displayed on every run:
+`🔥 5-day streak`.
+
+**Week progress bar** [S]
+`[████░] 4/5 this week` — shown on every run next to the
+streak. On weekends anchors to the previous Friday.
+
+**Completion flag — `tmux-trainer done`** [S]
+Appends a `completed` entry for today. Prints updated streak
+and bar. Calling it twice on the same day is a no-op.
+
+**Milestone badges** [S]
+Printed once when first earned, stored as `badge` lines in
+the log: `first-done`, `first-week`, `first-cycle`.
+
+**vimtutor-style exercise copy** [S]
+Exercise is copied to `/tmp/tmux-trainer-day-NN.md` before
+display. Refreshed only when source is newer. Annotations
+survive re-runs of the same day.
+
+**Cheat sheet — `tmux-trainer cheat`** [S]
+Prints all `Ctrl-b` shortcuts from exercises 1 to today,
+grouped by day, extracted live from the exercise files.
+`--all` flag shows every exercise regardless of today's day.
