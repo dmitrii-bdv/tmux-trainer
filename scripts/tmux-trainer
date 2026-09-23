@@ -319,6 +319,106 @@ case "${1:-}" in
   h|-h|--help)   set -- help ;;
 esac
 
+# ── internal: generate man page (troff) ───────────────────────────────────
+
+_generate_man() {
+  cat <<'TROFF'
+.TH TMUX-TRAINER 1 "" "tmux-trainer" "User Commands"
+.SH NAME
+tmux\-trainer \- daily tmux exercise trainer
+.SH SYNOPSIS
+.B tmux-trainer
+.RI [ DAY ]
+.br
+.B tmux-trainer
+.I subcommand
+.RI [ args ]
+.SH DESCRIPTION
+Delivers one tmux exercise per working day.
+Tracks completions, streaks, and spaced-repetition reviews.
+Run without arguments to get today's exercise
+(or the next SRS review if one is due).
+.SH SUBCOMMANDS
+.TP
+.B (no args)
+Today's exercise \(em SRS queue first.
+.TP
+.B DAY
+Open a specific exercise by number (1\-24).
+.TP
+.BR menu " | " m
+Pick any exercise with fzf. Falls back to shell
+.I select
+if fzf is not installed.
+.TP
+.BR done " | " d
+Mark the current exercise completed and advance its SRS interval.
+Running
+.B done
+twice on the same day is a no-op.
+.TP
+.BR "skip [N]" " | " "s [N]"
+Defer the current (or specified) exercise to the SRS queue.
+.TP
+.BR "check [N]" " | " "c [N]"
+Verify your live tmux state against the exercise assertions.
+Pass a day number to check a specific exercise.
+.TP
+.B cheat
+Print all Ctrl-b shortcuts introduced up to today's exercise.
+.TP
+.B "cheat \-\-all"
+Print shortcuts from all 24 exercises.
+.TP
+.BR review " | " r
+Open a random completed exercise as an unscheduled drill.
+.TP
+.BR help " | " h
+Print a usage summary to stdout.
+.SH FILES
+.TP
+.I ~/.local/share/tmux-trainer/log
+Append-only completion log. One entry per run.
+.TP
+.I ~/.local/share/tmux-trainer/srs
+Spaced-repetition queue state (tab-separated).
+.TP
+.I ~/.local/share/tmux-trainer/current
+Last opened exercise number.
+.TP
+.I /tmp/tmux-trainer-day-NN.md
+Annotatable working copy of the current exercise.
+.SH TMUX KEYBINDING
+Trigger a random drill from any tmux window with Prefix+r.
+Add to
+.IR ~/.tmux.conf :
+.PP
+.nf
+    bind-key r run-shell "tmux-trainer review"
+.fi
+.SH EXAMPLES
+.nf
+tmux-trainer          # today's exercise
+tmux-trainer 7        # exercise 7
+tmux-trainer m        # pick with fzf
+tmux-trainer d        # mark complete
+tmux-trainer c        # verify tmux state
+tmux-trainer cheat    # shortcut reference
+tmux-trainer r        # random drill
+.fi
+.SH AUTHOR
+Written by DiBDV. Source: https://github.com/DiBDV/tmux-trainer
+TROFF
+}
+
+if [[ "${1:-}" == "--man-install" ]]; then
+  MAN_DIR="${HOME}/.local/share/man/man1"
+  mkdir -p "${MAN_DIR}"
+  _generate_man > "${MAN_DIR}/tmux-trainer.1"
+  echo "man page installed → ${MAN_DIR}/tmux-trainer.1"
+  exit 0
+fi
+
 # ── subcommand: help ───────────────────────────────────────────────────────
 
 if [[ "${1:-}" == "help" ]]; then

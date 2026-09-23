@@ -18,6 +18,8 @@ chmod 644 "${TARGET}"
 launchctl bootout "gui/$(id -u)" "${TARGET}" 2>/dev/null || true
 launchctl bootstrap "gui/$(id -u)" "${TARGET}"
 
+"${ROOT_DIR}/scripts/tmux-trainer" --man-install
+
 echo "Installed ${LABEL}"
 echo "Schedule: Monday-Friday at 09:00"
 echo
