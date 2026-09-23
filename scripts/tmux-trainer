@@ -11,13 +11,33 @@ ROOT_DIR="$(cd "$(dirname "$_src")/.." && pwd)"
 unset _src _dir
 EXERCISE_DIR="${ROOT_DIR}/exercises"
 LOG_DIR="${HOME}/.local/share/tmux-trainer"
-LOG_FILE="${LOG_DIR}/log"
 
 TOTAL_EXERCISES=$(ls "${EXERCISE_DIR}"/day-*.md 2>/dev/null | wc -l | tr -d ' ')
 
+SRS_INTERVALS=(1 3 7 21)
+
+# ── user config ────────────────────────────────────────────────────────────
+WEBHOOK_URL=""
+_conf="${HOME}/.config/tmux-trainer/conf"
+[[ -f "${_conf}" ]] && source "${_conf}"
+unset _conf
+# Recalculate derived paths (user config may override LOG_DIR)
+LOG_FILE="${LOG_DIR}/log"
 SRS_FILE="${LOG_DIR}/srs"
 CURRENT_FILE="${LOG_DIR}/current"
-SRS_INTERVALS=(1 3 7 21)
+
+# ── display style (NO_COLOR / narrow terminal) ─────────────────────────────
+_cols="$(tput cols 2>/dev/null || echo 80)"
+if [[ -n "${NO_COLOR:-}" ]] || [[ "${_cols}" -lt 60 ]]; then
+  IC_FIRE=">"; IC_BOOKS=">"; IC_WARN="!"
+  IC_CHECK="+"; IC_CROSS="-"; IC_DICE="~"; IC_TIMER="~"
+  IC_BADGE="*"; _NARROW=1
+else
+  IC_FIRE="🔥"; IC_BOOKS="📚"; IC_WARN="⚠ "
+  IC_CHECK="✓"; IC_CROSS="✗"; IC_DICE="🎲"; IC_TIMER="⏱ "
+  IC_BADGE="🏅"; _NARROW=0
+fi
+unset _cols
 
 # ── portable date helpers ──────────────────────────────────────────────────
 
@@ -151,14 +171,14 @@ _check_badges() {
   # first-done: first ever completion
   if ! grep -q " badge first-done$" "${LOG_FILE}" 2>/dev/null; then
     _log_append "$(_today)" "badge" "first-done"
-    echo "🏅 Badge unlocked: First completion"
+    printf "%s Badge unlocked: First completion\n" "${IC_BADGE}"
   fi
 
   # first-week: first time all 5 weekdays completed in a single week
   if ! grep -q " badge first-week$" "${LOG_FILE}" 2>/dev/null; then
     if [[ "$(_week_completed_count)" -ge 5 ]]; then
       _log_append "$(_today)" "badge" "first-week"
-      echo "🏅 Badge unlocked: First full week"
+      printf "%s Badge unlocked: First full week\n" "${IC_BADGE}"
     fi
   fi
 
@@ -173,7 +193,8 @@ _check_badges() {
     done
     if [[ "${all_done}" -eq 1 ]]; then
       _log_append "$(_today)" "badge" "first-cycle"
-      echo "🏅 Badge unlocked: First full cycle — all ${TOTAL_EXERCISES} exercises done!"
+      printf "%s Badge unlocked: First full cycle — all %d exercises done!\n" \
+        "${IC_BADGE}" "${TOTAL_EXERCISES}"
     fi
   fi
 }
@@ -319,9 +340,9 @@ _assert() {
   esac
 
   if [[ "${pass}" -eq 1 ]]; then
-    printf "  ✓ %s\n" "${msg}"
+    printf "  %s %s\n" "${IC_CHECK}" "${msg}"
   else
-    printf "  ✗ %s\n" "${msg}"
+    printf "  %s %s\n" "${IC_CROSS}" "${msg}"
     return 1
   fi
 }
@@ -515,7 +536,7 @@ if [[ "${1:-}" == "review" ]]; then
   fi
 
   _pick="${_completed[$(( RANDOM % ${#_completed[@]} ))]}"
-  printf "🎲 Random drill: Day %s\n\n" "${_pick}"
+  printf "%s Random drill: Day %s\n\n" "${IC_DICE}" "${_pick}"
   exec "$0" "$(( 10#${_pick} ))"
 fi
 
@@ -654,7 +675,7 @@ if [[ "${1:-}" == "done" ]]; then
     _log_append "$(_today)" "${DAY_PADDED}" "completed"
     _srs_update "${DAY_PADDED}" 1
     STREAK="$(_streak)"
-    echo "✓ Day ${DAY_PADDED} marked as completed"
+    printf "%s Day %s marked as completed\n" "${IC_CHECK}" "${DAY_PADDED}"
     if [[ "${DAY_PADDED}" == "20" ]] && [[ -f "${LOG_DIR}/time_start" ]]; then
       _ts_start="$(cat "${LOG_DIR}/time_start")"
       _ts_end="$(date +%s)"
@@ -663,20 +684,25 @@ if [[ "${1:-}" == "done" ]]; then
       _mins=$(( _elapsed / 60 ))
       _secs=$(( _elapsed % 60 ))
       if [[ "${_elapsed}" -le 300 ]]; then
-        printf "⏱  Completed in %dm %02ds  (target: < 5m)\n" "${_mins}" "${_secs}"
+        printf "%s Completed in %dm %02ds  (target: < 5m)\n" "${IC_TIMER}" "${_mins}" "${_secs}"
       else
         _over=$(( _elapsed - 300 ))
-        printf "⏱  Completed in %dm %02ds  (target: < 5m — over by %ds)\n" \
-          "${_mins}" "${_secs}" "${_over}"
+        printf "%s Completed in %dm %02ds  (target: < 5m — over by %ds)\n" \
+          "${IC_TIMER}" "${_mins}" "${_secs}" "${_over}"
       fi
     fi
     PENDING="$(_srs_reviews_pending)"
     if [[ "${PENDING}" -gt 0 ]]; then
-      printf "📚 %d review(s) still due — run \`tmux-trainer\` to continue\n" "${PENDING}"
+      printf "%s %d review(s) still due — run \`tmux-trainer\` to continue\n" \
+        "${IC_BOOKS}" "${PENDING}"
     fi
     if [[ "${STREAK}" -gt 0 ]]; then
-      printf "🔥 %d-day streak  ·  %s\n" "${STREAK}" "$(_week_bar)"
-    else
+      if [[ "${_NARROW}" -eq 1 ]]; then
+        printf "%s %d-day streak\n" "${IC_FIRE}" "${STREAK}"
+      else
+        printf "%s %d-day streak  ·  %s\n" "${IC_FIRE}" "${STREAK}" "$(_week_bar)"
+      fi
+    elif [[ "${_NARROW}" -eq 0 ]]; then
       echo "$(_week_bar)"
     fi
     _check_badges
@@ -696,7 +722,7 @@ if [[ "${1:-}" == "skip" ]]; then
   fi
   _log_append "$(_today)" "${DAY_PADDED}" "skipped"
   _srs_update "${DAY_PADDED}" 0
-  echo "✗ Day ${DAY_PADDED} skipped — queued for review tomorrow"
+  printf "%s Day %s skipped — queued for review tomorrow\n" "${IC_CROSS}" "${DAY_PADDED}"
   exit 0
 fi
 
@@ -818,7 +844,7 @@ STREAK="$(_streak)"
 PENDING="$(_srs_reviews_pending)"
 
 if [[ "${PENDING}" -gt 10 ]]; then
-  printf "⚠  %d reviews due — consider a catch-up session first.\n" "${PENDING}"
+  printf "%s %d reviews due — consider a catch-up session first.\n" "${IC_WARN}" "${PENDING}"
   echo
 fi
 
@@ -828,15 +854,20 @@ if [[ -n "${SRS_REVIEW}" ]]; then
   srs_cur="${SRS_INTERVALS[$(( srs_reps < 4 ? srs_reps : 3 ))]}"
   srs_next_idx=$(( srs_reps < 3 ? srs_reps + 1 : 3 ))
   srs_next="${SRS_INTERVALS[${srs_next_idx}]}"
-  printf "📚 SRS review (%d due)  ·  interval %dd → %dd on pass\n" \
-    "${PENDING}" "${srs_cur}" "${srs_next}"
+  printf "%s SRS review (%d due)  ·  interval %dd -> %dd on pass\n" \
+    "${IC_BOOKS}" "${PENDING}" "${srs_cur}" "${srs_next}"
 elif [[ "${PENDING}" -gt 0 ]]; then
-  printf "📚 %d review(s) due — run \`tmux-trainer\` after this one\n" "${PENDING}"
+  printf "%s %d review(s) due — run \`tmux-trainer\` after this one\n" \
+    "${IC_BOOKS}" "${PENDING}"
 fi
 
 if [[ "${STREAK}" -gt 0 ]]; then
-  printf "🔥 %d-day streak  ·  %s\n" "${STREAK}" "$(_week_bar)"
-else
+  if [[ "${_NARROW}" -eq 1 ]]; then
+    printf "%s %d-day streak\n" "${IC_FIRE}" "${STREAK}"
+  else
+    printf "%s %d-day streak  ·  %s\n" "${IC_FIRE}" "${STREAK}" "$(_week_bar)"
+  fi
+elif [[ "${_NARROW}" -eq 0 ]]; then
   echo "$(_week_bar)"
 fi
 

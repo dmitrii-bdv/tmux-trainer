@@ -395,3 +395,104 @@ exercises regardless of how it is invoked — directly, via a
 Set `TMUX_TRAINER_OPEN_ITERM=1` to open a new iTerm2 window
 displaying the exercise on each run. Off by default. No effect
 if iTerm2 is not installed.
+
+---
+
+## User config
+
+Create `~/.config/tmux-trainer/conf` to override defaults. The
+file is sourced as bash, so use standard variable assignments:
+
+```bash
+# Override log location
+LOG_DIR="${HOME}/my-logs/tmux-trainer"
+
+# Webhook URL for daily reminders (Slack, Discord, Telegram)
+WEBHOOK_URL=""
+
+# Disable emoji and colour output
+NO_COLOR=1
+```
+
+Available overrides:
+
+| Variable      | Default                                    | Effect                      |
+|---------------|--------------------------------------------|-----------------------------|
+| `LOG_DIR`     | `~/.local/share/tmux-trainer`              | Move log and SRS files      |
+| `WEBHOOK_URL` | `""`                                       | POST daily reminder payload |
+| `NO_COLOR`    | unset                                      | Force plain-text output     |
+
+---
+
+## Plain-text output (NO_COLOR)
+
+Set `NO_COLOR` in your environment or config file to replace all
+emoji with plain ASCII indicators. Also activates automatically
+when the terminal is narrower than 60 columns.
+
+```bash
+export NO_COLOR=1
+tmux-trainer
+```
+
+Wide output:
+
+```text
+🔥 5-day streak  ·  [████░] 4/5 this week
+✓ Day 04 marked as completed
+```
+
+Narrow / NO_COLOR output:
+
+```text
+> 5-day streak
++ Day 04 marked as completed
+```
+
+---
+
+## Shell completions
+
+Completion files live in `completions/`. Install once:
+
+### zsh
+
+```bash
+mkdir -p ~/.zsh/completions
+cp completions/tmux-trainer.zsh ~/.zsh/completions/_tmux_trainer
+# Ensure ~/.zsh/completions is in your fpath, e.g. in ~/.zshrc:
+#   fpath=(~/.zsh/completions $fpath)
+#   autoload -Uz compinit && compinit
+```
+
+### bash
+
+```bash
+cp completions/tmux-trainer.bash /usr/local/etc/bash_completion.d/tmux-trainer
+source /usr/local/etc/bash_completion.d/tmux-trainer
+```
+
+Or use `make install-completions` to copy both at once.
+
+Completions cover: all subcommands, day numbers 1–24, `--tag`
+values, `--all` after `cheat`, and day numbers after `check`/`skip`.
+
+---
+
+## Installation (Makefile)
+
+A `Makefile` provides one-command installation:
+
+```bash
+make install             # symlink + man page
+make install-completions # bash and zsh completions
+make install-launchd     # macOS daily reminder
+make uninstall           # remove all installed files
+```
+
+Override install paths:
+
+```bash
+make install BIN_DIR=~/bin
+make install-completions ZSH_COMP=~/.config/zsh/completions
+```
