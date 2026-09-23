@@ -4,13 +4,6 @@ Ordered highest → lowest learning impact.
 Pick from the top — earlier items unlock later ones.
 
 Effort: [S] hours · [M] days · [L] week+
-Deps listed only when a prior item is a hard prerequisite.
-
----
-
----
-
-## Tier 3 — Reduce daily friction
 
 ---
 
