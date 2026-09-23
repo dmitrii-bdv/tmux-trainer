@@ -12,13 +12,14 @@ and prints the exercise to stdout.
 ### Usage
 
 ```bash
-./scripts/tmux-trainer            # today's exercise (SRS queue first)
-./scripts/tmux-trainer 7          # a specific exercise by number
-./scripts/tmux-trainer done       # mark completed, advance SRS interval
-./scripts/tmux-trainer skip       # queue for review tomorrow (SM-2)
-./scripts/tmux-trainer check      # verify today's tmux state
-./scripts/tmux-trainer check 12   # verify a specific day's state
-./scripts/tmux-trainer cheat      # shortcuts from exercises 1 to today
+./scripts/tmux-trainer              # today's exercise (SRS queue first)
+./scripts/tmux-trainer 7            # a specific exercise by number
+./scripts/tmux-trainer menu         # fzf picker to jump to any exercise
+./scripts/tmux-trainer done         # mark completed, advance SRS interval
+./scripts/tmux-trainer skip         # queue for review tomorrow (SM-2)
+./scripts/tmux-trainer check        # verify today's tmux state
+./scripts/tmux-trainer check 12     # verify a specific day's state
+./scripts/tmux-trainer cheat        # shortcuts from exercises 1 to today
 ./scripts/tmux-trainer cheat --all  # shortcuts from all exercises
 ```
 

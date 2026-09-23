@@ -400,6 +400,34 @@ if [[ "${1:-}" == "cheat" ]]; then
   exit 0
 fi
 
+# ── subcommand: menu ──────────────────────────────────────────────────────
+
+if [[ "${1:-}" == "menu" ]]; then
+  menu_items=""
+  for (( n=1; n<=TOTAL_EXERCISES; n++ )); do
+    printf -v p "%02d" "${n}"
+    f="${EXERCISE_DIR}/day-${p}.md"
+    [[ -f "${f}" ]] || continue
+    title="$(grep -m1 '^# ' "${f}" | sed 's/^# //')"
+    menu_items+="${p}  ${title}"$'\n'
+  done
+
+  if command -v fzf >/dev/null 2>&1; then
+    selection="$(printf '%s' "${menu_items}" \
+      | fzf --prompt='exercise > ' --height=40% --reverse)"
+  else
+    echo "Select an exercise:"
+    IFS=$'\n' read -r -d '' -a menu_arr <<< "${menu_items}" || true
+    select selection in "${menu_arr[@]}"; do
+      [[ -n "${selection}" ]] && break
+    done
+  fi
+
+  [[ -z "${selection}" ]] && exit 0
+  chosen_day="$(echo "${selection}" | awk '{print $1}')"
+  exec "$0" "$(( 10#${chosen_day} ))"
+fi
+
 # ── subcommand: done ───────────────────────────────────────────────────────
 
 if [[ "${1:-}" == "done" ]]; then
