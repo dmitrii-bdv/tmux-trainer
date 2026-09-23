@@ -16,18 +16,6 @@ across reboots), tmux-continuum (auto-save), and tmux-fingers
 (fast on-screen copy hints). No comparable exercises exist in
 any other learn-tmux repo found.
 
-### 18. Pane title display [S]
-
-Add a step to day 10 showing:
-
-```text
-set -g pane-border-status top
-set -g pane-border-format ' #{pane_title} '
-```
-
-Commonly discovered late by tmux users; surfacing it early pays
-off in all subsequent workspace exercises.
-
 ---
 
 ## Tier 5 — Polish and infrastructure

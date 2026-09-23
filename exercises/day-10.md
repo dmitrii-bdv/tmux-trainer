@@ -38,16 +38,35 @@ Or with the new binding (after the first manual reload):
 Ctrl-b r
 ```
 
+Show pane titles in the border — add these lines to `~/.tmux.conf`:
+
+```text
+# show pane title in the top border
+set -g pane-border-status top
+set -g pane-border-format ' #{pane_title} '
+```
+
+Reload again (`Ctrl-b r`) and observe the title bar appear above
+each pane. Rename the current pane's title:
+
+```bash
+printf '\033]2;%s\033\\' "my-pane"
+```
+
+Most programs (vim, htop, shells) set the title automatically
+once `pane-border-status` is on.
+
 ## Completion goal
 
-Add the config above, reload it live inside a running
-session, and confirm the reload message appears.
+Add all config lines above, reload live, confirm the reload
+message appears, and verify the pane title bar is visible.
 
 ## Check
 
 ```text
 option_set  history-limit 10000
 option_set  mouse on
+option_set  pane-border-status top
 ```
 
 ---

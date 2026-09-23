@@ -21,13 +21,13 @@ skills stay sharp through repetition.
 
 ### Week 2 — Navigation and Layout
 
-| Day | Topic                   | What you practise                     |
-|-----|-------------------------|---------------------------------------|
-| 06  | Pane layouts            | cycle presets with `Ctrl-b Space`     |
-| 07  | Copy mode I: scrollback | navigate and search history           |
-| 08  | Multiple sessions       | switch sessions with `Ctrl-b s`       |
-| 09  | Pane synchronisation    | send keystrokes to all panes at once  |
-| 10  | tmux.conf basics        | history limit, mouse, live reload     |
+| Day | Topic                   | What you practise                          |
+|-----|-------------------------|--------------------------------------------|
+| 06  | Pane layouts            | cycle presets with `Ctrl-b Space`          |
+| 07  | Copy mode I: scrollback | navigate and search history                |
+| 08  | Multiple sessions       | switch sessions with `Ctrl-b s`            |
+| 09  | Pane synchronisation    | send keystrokes to all panes at once       |
+| 10  | tmux.conf basics        | history limit, mouse, pane titles, reload  |
 
 ### Week 3 — Configuration and Productivity
 
