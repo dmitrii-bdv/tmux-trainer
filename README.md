@@ -139,14 +139,47 @@ cd tmux-trainer
 chmod +x scripts/tmux-trainer scripts/install-launchd
 ```
 
-### 3. Run manually
+### 3. Add to PATH
+
+Symlink the script into `~/.local/bin` so you can run `tmux-trainer`
+from any directory. The script resolves symlinks at runtime, so it
+always finds its exercises regardless of how it is invoked.
+
+Run from the repo root (assumes `~/.local/bin` exists and is on PATH):
 
 ```bash
-./scripts/tmux-trainer          # today's exercise
-./scripts/tmux-trainer 7        # a specific exercise
+ln -sf "$(pwd)/scripts/tmux-trainer" ~/.local/bin/tmux-trainer
 ```
 
-### 4. Install the daily macOS reminder
+Then ensure `~/.local/bin` is on your PATH. For zsh, add to your
+`~/.zshrc` (or `~/.config/zsh/.zshrc`):
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+Reload your shell:
+
+```bash
+source ~/.zshrc
+```
+
+Verify:
+
+```bash
+which tmux-trainer   # → ~/.local/bin/tmux-trainer
+tmux-trainer         # today's exercise
+tmux-trainer 7       # a specific exercise
+```
+
+### 4. Run manually
+
+```bash
+tmux-trainer          # today's exercise
+tmux-trainer 7        # a specific exercise
+```
+
+### 6. Install the daily macOS reminder
 
 ```bash
 ./scripts/install-launchd
@@ -160,13 +193,13 @@ Monday–Friday and writes logs to:
 ~/Library/Logs/tmux-trainer-error.log
 ```
 
-### 5. Test the scheduled job
+### 7. Test the scheduled job
 
 ```bash
 launchctl kickstart -k gui/$(id -u)/com.local.tmux-trainer
 ```
 
-### 6. Uninstall
+### 8. Uninstall
 
 ```bash
 launchctl bootout gui/$(id -u) \

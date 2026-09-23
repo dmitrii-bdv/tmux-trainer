@@ -40,3 +40,12 @@ window.pane      current session, named window
 Create two sessions with two windows each, then use
 `tmux send-keys -t` to run `date` in a specific pane
 in the other session — without switching to it.
+
+---
+
+## Workflow
+
+1. Read this exercise, then practise the commands in tmux.
+2. Run `tmux-trainer check` to verify your work.
+3. Run `tmux-trainer done` when finished.
+4. Run `tmux-trainer skip` to defer to another day.

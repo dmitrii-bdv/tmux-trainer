@@ -1,7 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+_src="${BASH_SOURCE[0]}"
+while [[ -L "$_src" ]]; do
+  _dir="$(cd -P "$(dirname "$_src")" && pwd)"
+  _src="$(readlink "$_src")"
+  [[ "$_src" != /* ]] && _src="$_dir/$_src"
+done
+ROOT_DIR="$(cd "$(dirname "$_src")/.." && pwd)"
+unset _src _dir
 EXERCISE_DIR="${ROOT_DIR}/exercises"
 LOG_DIR="${HOME}/.local/share/tmux-trainer"
 LOG_FILE="${LOG_DIR}/log"
@@ -208,7 +215,7 @@ _srs_update() {  # _srs_update PAD CORRECT(1=pass,0=fail)
 }
 
 _srs_due_list() {  # prints zero-padded exercise numbers due today, oldest first
-  [[ -f "${SRS_FILE}" ]] || return
+  [[ -f "${SRS_FILE}" ]] || return 0
   local today; today="$(_today)"
   while IFS=$'\t' read -r pad last_date reps; do
     local idx interval due_date
@@ -487,10 +494,12 @@ echo "${DAY_PADDED}" > "${CURRENT_FILE}"
 
 TITLE="$(grep -m1 '^# ' "${EXERCISE}" | sed 's/^# //')"
 SUMMARY="$(grep -m1 '^Goal:' "${EXERCISE}" | sed 's/^Goal:[[:space:]]*//')"
-NOTIFICATION="${SUMMARY:-Open the tmux exercise for today}"
+NOTIFICATION="${SUMMARY:+${SUMMARY} · }Run: tmux-trainer"
 
 if command -v osascript >/dev/null 2>&1; then
-  osascript -e "display notification \"${NOTIFICATION}\" with title \"tmux trainer\" subtitle \"${TITLE}\""
+  osascript <<EOF
+display notification "${NOTIFICATION}" with title "tmux trainer" subtitle "${TITLE}"
+EOF
 fi
 
 # ── display ────────────────────────────────────────────────────────────────

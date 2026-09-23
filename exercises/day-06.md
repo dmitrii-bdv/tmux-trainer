@@ -52,3 +52,12 @@ touching the mouse or resizing panes manually.
 session_exists  layouts
 pane_count      layouts 3
 ```
+
+---
+
+## Workflow
+
+1. Read this exercise, then practise the commands in tmux.
+2. Run `tmux-trainer check` to verify your work.
+3. Run `tmux-trainer done` when finished.
+4. Run `tmux-trainer skip` to defer to another day.
