@@ -192,6 +192,8 @@ window_named    debug logs
 | `pane_running` | `session:window cmd` | pane running a process |
 | `option_set` | `option value` | global tmux option value |
 | `file_exists` | `path` | file or directory exists |
+| `pane_contains` | `target pattern` | pattern in pane scrollback |
+| `file_contains` | `path pattern` | pattern found in file |
 
 Exercises 07 and 13 have no `## Check` section — they focus on
 concepts with no structural state to verify.

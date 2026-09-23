@@ -8,23 +8,6 @@ Deps listed only when a prior item is a hard prerequisite.
 
 ---
 
-## Tier 2 — Close the verification gap
-
-### 6. Pane-content assertions [M]
-
-Dep: `tmux-trainer check` (done).
-
-Extend check with a `pane_contains` assertion that runs
-`tmux capture-pane -t TARGET -p` and greps for expected output.
-Example for day 7 (copy mode):
-
-```text
-pane_contains  training:shell.0  "line 50"
-```
-
-Covers days 3, 6, 9, 15 where the correct output is observable
-in the pane itself.
-
 ---
 
 ## Tier 3 — Reduce daily friction

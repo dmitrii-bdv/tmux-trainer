@@ -171,6 +171,8 @@ live tmux state. Supported assertion types:
 | `pane_running`  | `session:window cmd` | pane running a process      |
 | `option_set`    | `option value`       | global tmux option value    |
 | `file_exists`   | `path`               | file or directory exists    |
+| `pane_contains` | `target pattern`     | pattern in pane scrollback  |
+| `file_contains` | `path pattern`       | pattern found in file       |
 
 Pass a day number to check a specific exercise:
 

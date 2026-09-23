@@ -45,7 +45,8 @@ and verify all 20 lines are present in the file.
 ## Check
 
 ```text
-file_exists  /tmp/pane-dump.txt
+file_exists     /tmp/pane-dump.txt
+file_contains   /tmp/pane-dump.txt  event 20
 ```
 
 ---

@@ -296,6 +296,23 @@ _assert() {
         msg="file not found: ${path}"
       fi
       ;;
+    pane_contains)
+      local content
+      content="$(tmux capture-pane -t "$1" -p -S - 2>/dev/null)" || content=""
+      if echo "${content}" | grep -q "$2"; then
+        pass=1; msg="'$1' contains '$2'"
+      else
+        msg="'$1' does not contain '$2'"
+      fi
+      ;;
+    file_contains)
+      local path="${1/#\~/${HOME}}"
+      if [[ -f "${path}" ]] && grep -q "$2" "${path}" 2>/dev/null; then
+        pass=1; msg="'${path}' contains '$2'"
+      else
+        msg="'${path}' does not contain '$2'"
+      fi
+      ;;
     *)
       msg="unknown assertion type: ${type}"
       ;;
@@ -363,6 +380,9 @@ Defer the current (or specified) exercise to the SRS queue.
 .BR "check [N]" " | " "c [N]"
 Verify your live tmux state against the exercise assertions.
 Pass a day number to check a specific exercise.
+Assertion types: session_exists, window_count, window_named,
+pane_count, pane_running, option_set, file_exists,
+pane_contains, file_contains.
 .TP
 .B cheat
 Print all Ctrl-b shortcuts introduced up to today's exercise.

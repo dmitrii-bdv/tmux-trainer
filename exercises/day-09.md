@@ -46,8 +46,9 @@ each pane independently.
 ## Check
 
 ```text
-session_exists  sync
-pane_count      sync 4
+session_exists   sync
+pane_count       sync 4
+pane_contains    sync:0 hostname
 ```
 
 ---
