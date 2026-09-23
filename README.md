@@ -17,77 +17,61 @@ git clone git@github.com:<YOUR_GITHUB_USER>/tmux-trainer.git
 cd tmux-trainer
 ```
 
-### 2. Make scripts executable
+### 2. Install
 
 ```bash
-chmod +x scripts/tmux-trainer scripts/install-launchd
+make install
 ```
 
-### 3. Add to PATH
-
-Symlink the script into `~/.local/bin` so you can run
-`tmux-trainer` from any directory. The script resolves symlinks
-at runtime, so it always finds its exercises regardless of how
-it is invoked.
-
-Run from the repo root (assumes `~/.local/bin` exists and is
-on PATH):
-
-```bash
-ln -sf "$(pwd)/scripts/tmux-trainer" ~/.local/bin/tmux-trainer
-```
-
-Then ensure `~/.local/bin` is on your PATH. For zsh, add to
-your `~/.zshrc` (or `~/.config/zsh/.zshrc`):
+Symlinks the script into `~/.local/bin`, installs the man page,
+and marks scripts executable. Requires `~/.local/bin` to exist
+and be on your `PATH`. Add it to your shell config if needed:
 
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
 ```
 
-Reload and verify:
+### 3. (Optional) Shell completions
 
 ```bash
-source ~/.zshrc
-which tmux-trainer
+make install-completions
 ```
 
-### 4. Run manually
+Enables `tmux-trainer <TAB>` for subcommands, day numbers, and
+`--tag` values. See [docs/features.md](docs/features.md) for
+shell-specific setup.
+
+### 4. (Optional) macOS daily reminder
 
 ```bash
-tmux-trainer          # today's exercise
-tmux-trainer menu     # pick any exercise with fzf
-tmux-trainer done     # mark today complete
-tmux-trainer skip     # defer to spaced-repetition queue
-tmux-trainer check    # verify your tmux state
-tmux-trainer cheat    # shortcuts introduced so far
+make install-launchd
 ```
 
-### 5. Install the daily macOS reminder
+Fires `tmux-trainer` at 09:00 Monday–Friday via launchd.
+
+### Uninstall
 
 ```bash
-./scripts/install-launchd
+make uninstall
 ```
 
-### 6. Test the scheduled job
+## Quick reference
 
 ```bash
-launchctl kickstart -k gui/$(id -u)/com.local.tmux-trainer
-```
-
-### 7. Uninstall
-
-```bash
-launchctl bootout gui/$(id -u) \
-  ~/Library/LaunchAgents/com.local.tmux-trainer.plist
-rm ~/Library/LaunchAgents/com.local.tmux-trainer.plist
+tmux-trainer           # today's exercise
+tmux-trainer menu      # pick any exercise with fzf
+tmux-trainer done      # mark today complete
+tmux-trainer skip      # defer to spaced-repetition queue
+tmux-trainer check     # verify your tmux state
+tmux-trainer cheat     # shortcuts introduced so far
+tmux-trainer --tag config  # filter by tag
 ```
 
 ## Documentation
 
 - [docs/features.md](docs/features.md) —
-  curriculum, exercise format, all subcommands, progress
-  tracking, spaced repetition, notifications
-- [docs/scripts.md](docs/scripts.md) —
-  script reference: `tmux-trainer` and `install-launchd`
+  curriculum, all subcommands, tags, config, NO\_COLOR,
+  completions, spaced repetition, notifications
+- [docs/scripts.md](docs/scripts.md) — script reference
 - [docs/github-workflow.md](docs/github-workflow.md) —
   GitHub Actions setup and Telegram configuration
