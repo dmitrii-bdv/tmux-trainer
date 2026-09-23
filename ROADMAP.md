@@ -8,13 +8,9 @@ Deps listed only when a prior item is a hard prerequisite.
 
 ---
 
-## Tier 1 — Fix the broken feedback loop
+## Tier 1 — Fix the broken feedback loop ✓ Done
 
-The trainer currently has no memory and no feedback.
-You do an exercise and nothing happens. These four items
-close that gap and are the foundation for everything else.
-
-### 1. State file [S]
+### 1. State file [S] ✓
 
 Add an append-only log at
 `~/.local/share/tmux-trainer/log`:
@@ -28,7 +24,7 @@ One line per run, written by `tmux-trainer done` (item 2)
 and `tmux-trainer skip`. Parse with `awk`. No database,
 no JSON. Every other tracking feature depends on this.
 
-### 2. `tmux-trainer done` and `skip` flags [S]
+### 2. `tmux-trainer done` and `skip` flags [S] ✓
 
 Dep: item 1.
 
@@ -45,7 +41,7 @@ at the end of every exercise output:
 When finished: ./scripts/tmux-trainer done
 ```
 
-### 3. Streak counter [S]
+### 3. Streak counter [S] ✓
 
 Dep: item 1.
 
@@ -60,7 +56,7 @@ Streaks are the single most effective retention mechanism
 in daily-habit tools (Duolingo, GitHub contributions,
 habitctl). Small to build, high motivation payoff.
 
-### 4. Week progress indicator [S]
+### 4. Week progress indicator [S] ✓
 
 Dep: item 1.
 
@@ -77,11 +73,7 @@ separate dashboard. Two lines of awk.
 
 ## Tier 2 — Close the verification gap
 
-Right now there is no way to know whether an exercise
-was actually completed correctly. These items give the
-trainer eyes into the live tmux state.
-
-### 5. `tmux-trainer check` subcommand [M]
+### 5. `tmux-trainer check` subcommand [M] ✓
 
 Add a `## Check` block to each exercise file containing
 machine-readable assertions:
@@ -130,10 +122,7 @@ observable in the pane itself.
 
 ## Tier 3 — Reduce daily friction
 
-High ROI, low effort. Each of these removes a moment of
-resistance that currently interrupts the exercise flow.
-
-### 7. vimtutor-style exercise copy [S]
+### 7. vimtutor-style exercise copy [S] ✓
 
 When displaying an exercise, copy it to a temp file:
 
@@ -146,7 +135,7 @@ off steps and add inline notes without dirtying the repo.
 This is the exact pattern vimtutor uses to lower the
 activation barrier for experimentation.
 
-### 8. Cheat sheet command [S]
+### 8. Cheat sheet command [S] ✓
 
 ```bash
 ./scripts/tmux-trainer cheat
@@ -172,11 +161,7 @@ replaying a past exercise.
 
 ## Tier 4 — Long-term retention
 
-These apply learning-science techniques. They depend on
-the state file and add measurable retention benefit after
-the first cycle completes.
-
-### 10. Spaced repetition re-queue [M]
+### 10. Spaced repetition re-queue [M] ✓
 
 Dep: items 1 and 5.
 
@@ -264,7 +249,7 @@ tags: copy-mode navigation
 Lets users who join mid-cycle or want to drill a
 specific skill jump directly to relevant exercises.
 
-### 16. Milestone badges [S]
+### 16. Milestone badges [S] ✓
 
 Dep: item 1.
 

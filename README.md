@@ -114,7 +114,7 @@ tmux-trainer/
 │   ├── day-01.md
 │   ├── day-02.md
 │   │   …
-│   └── day-20.md
+│   └── day-24.md
 ├── scripts/
 │   ├── tmux-trainer       main script
 │   └── install-launchd    macOS launchd installer
@@ -177,9 +177,13 @@ tmux-trainer 7       # a specific exercise
 ```bash
 tmux-trainer          # today's exercise
 tmux-trainer 7        # a specific exercise
+tmux-trainer cheat    # shortcuts introduced so far
+tmux-trainer check    # verify the current exercise
+tmux-trainer done     # mark today complete
+tmux-trainer skip     # defer to spaced-repetition queue
 ```
 
-### 6. Install the daily macOS reminder
+### 5. Install the daily macOS reminder
 
 ```bash
 ./scripts/install-launchd
@@ -193,13 +197,13 @@ Monday–Friday and writes logs to:
 ~/Library/Logs/tmux-trainer-error.log
 ```
 
-### 7. Test the scheduled job
+### 6. Test the scheduled job
 
 ```bash
 launchctl kickstart -k gui/$(id -u)/com.local.tmux-trainer
 ```
 
-### 8. Uninstall
+### 7. Uninstall
 
 ```bash
 launchctl bootout gui/$(id -u) \
@@ -238,8 +242,8 @@ secrets to add to the repository.
 
 ## Suggested next steps
 
-- Track completed exercises in a local state file.
-- Add a `tmux-trainer check` command that inspects live
-  sessions, windows, and panes to verify completion.
-- Add streaks and progress summaries.
+- Add `tmux-trainer menu` — fzf picker to jump to any exercise.
+- Add `pane_contains` assertion for content-level check coverage.
+- Add shell completions for subcommands and day numbers.
 - Extend week 4 with team-specific tooling drills.
+- Add Linux `notify-send` support alongside `osascript`.
