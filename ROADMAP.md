@@ -33,19 +33,6 @@ in the pane itself.
 
 ## Tier 4 — Content and curriculum expansion
 
-### 13. Linux / notify-send support [S]
-
-Guard the notification call by OS:
-
-```bash
-if [[ "$(uname)" == "Linux" ]]; then
-  notify-send "tmux trainer" "${TITLE}"
-fi
-```
-
-Two-line change. Fills a real gap — tmuxquest, the only other
-interactive tmux learning tool found, is browser-only.
-
 ### 14. Timed mode for day-20 final drill [S]
 
 Dep: `done` subcommand (done).

@@ -706,7 +706,7 @@ fi
 _ensure_log
 echo "${DAY_PADDED}" > "${CURRENT_FILE}"
 
-# ── macOS notification ─────────────────────────────────────────────────────
+# ── notification ──────────────────────────────────────────────────────────
 
 TITLE="$(grep -m1 '^# ' "${EXERCISE}" | sed 's/^# //')"
 SUMMARY="$(grep -m1 '^Goal:' "${EXERCISE}" | sed 's/^Goal:[[:space:]]*//')"
@@ -716,6 +716,8 @@ if command -v osascript >/dev/null 2>&1; then
   osascript <<EOF
 display notification "${NOTIFICATION}" with title "tmux trainer" subtitle "${TITLE}"
 EOF
+elif command -v notify-send >/dev/null 2>&1; then
+  notify-send "tmux trainer — ${TITLE}" "${NOTIFICATION}"
 fi
 
 # ── display ────────────────────────────────────────────────────────────────

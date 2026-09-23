@@ -274,15 +274,18 @@ printed before the exercise to prompt a catch-up session:
 
 ---
 
-## macOS notification
+## Notification
 
-Fires via `osascript` on every run:
+Fires on every run. Platform is detected automatically:
 
-- **Title:** `tmux trainer`
-- **Subtitle:** exercise headline (first `#` line in the file)
+- **macOS** — `osascript` (title, subtitle, body)
+- **Linux** — `notify-send` (title + subtitle in one field, body)
+- **Other** — skipped silently if neither tool is available
+
+Notification content:
+
+- **Title:** `tmux trainer — <exercise headline>`
 - **Body:** `Goal:` text · `Run: tmux-trainer`
-
-Skipped silently on non-macOS systems.
 
 ---
 
