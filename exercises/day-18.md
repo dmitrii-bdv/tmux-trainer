@@ -1,6 +1,7 @@
 # Day 18 — Manual Session Snapshot
 
 Goal: Understand how to save and restore your workspace
+tags: sessions recovery
 manually — the concept behind tools like tmux-resurrect.
 
 ## Task

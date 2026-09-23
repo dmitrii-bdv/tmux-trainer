@@ -1,6 +1,7 @@
 # Day 19 — Live Config Reload
 
 Goal: Iterate on your tmux configuration and apply
+tags: config
 changes without restarting sessions or losing state.
 
 ## Task

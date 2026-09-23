@@ -469,6 +469,7 @@ SUBCOMMANDS
     cheat --all      shortcuts from all exercises
     review  | r      open a random completed exercise as a drill
     help    | h      show this page
+    --tag NAME       filter exercises by tag and pick with fzf
 
 FILES
     ~/.local/share/tmux-trainer/log      completion log
@@ -483,13 +484,14 @@ TMUX KEYBINDING
         bind-key r run-shell "tmux-trainer review"
 
 EXAMPLES
-    tmux-trainer          today's exercise
-    tmux-trainer 7        exercise 7
-    tmux-trainer m        pick with fzf
-    tmux-trainer d        mark complete
-    tmux-trainer c        verify tmux state
-    tmux-trainer cheat    shortcut reference
-    tmux-trainer r        random drill
+    tmux-trainer              today's exercise
+    tmux-trainer 7            exercise 7
+    tmux-trainer m            pick with fzf
+    tmux-trainer d            mark complete
+    tmux-trainer c            verify tmux state
+    tmux-trainer cheat        shortcut reference
+    tmux-trainer r            random drill
+    tmux-trainer --tag config all config exercises
 
 MANPAGE
   exit 0
@@ -696,6 +698,51 @@ if [[ "${1:-}" == "skip" ]]; then
   _srs_update "${DAY_PADDED}" 0
   echo "✗ Day ${DAY_PADDED} skipped — queued for review tomorrow"
   exit 0
+fi
+
+# ── subcommand: --tag ─────────────────────────────────────────────────────
+
+if [[ "${1:-}" == "--tag" ]]; then
+  TAG_FILTER="${2:-}"
+  if [[ -z "${TAG_FILTER}" ]]; then
+    echo "Usage: tmux-trainer --tag <name>" >&2; exit 1
+  fi
+
+  tag_items=""
+  for (( _n=1; _n<=TOTAL_EXERCISES; _n++ )); do
+    printf -v _p "%02d" "${_n}"
+    _f="${EXERCISE_DIR}/day-${_p}.md"
+    [[ -f "${_f}" ]] || continue
+    _tags="$(grep -m1 '^tags:' "${_f}" | sed 's/^tags:[[:space:]]*//')"
+    if echo "${_tags}" | grep -qw "${TAG_FILTER}"; then
+      _title="$(grep -m1 '^# ' "${_f}" | sed 's/^# //')"
+      tag_items+="${_p}  ${_title}"$'\n'
+    fi
+  done
+
+  if [[ -z "${tag_items}" ]]; then
+    printf "No exercises tagged '%s'\n" "${TAG_FILTER}" >&2; exit 1
+  fi
+
+  _tag_count="$(printf '%s' "${tag_items}" | grep -c .)"
+  if [[ "${_tag_count}" -eq 1 ]]; then
+    _chosen="$(printf '%s' "${tag_items}" | awk '{print $1}')"
+    exec "$0" "$(( 10#${_chosen} ))"
+  fi
+
+  if command -v fzf >/dev/null 2>&1; then
+    selection="$(printf '%s' "${tag_items}" \
+      | fzf --prompt="[${TAG_FILTER}] > " --height=40% --reverse)"
+  else
+    echo "Exercises tagged '${TAG_FILTER}':"
+    IFS=$'\n' read -r -d '' -a _tag_arr <<< "${tag_items}" || true
+    select selection in "${_tag_arr[@]}"; do
+      [[ -n "${selection}" ]] && break
+    done
+  fi
+  [[ -z "${selection}" ]] && exit 0
+  _chosen="$(echo "${selection}" | awk '{print $1}')"
+  exec "$0" "$(( 10#${_chosen} ))"
 fi
 
 # ── select exercise ────────────────────────────────────────────────────────

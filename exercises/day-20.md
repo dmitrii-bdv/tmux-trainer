@@ -1,6 +1,7 @@
 # Day 20 — Final Drill: SRE Workspace
 
 Goal: Build a complete SRE workspace from scratch,
+tags: scripting workflow
 from memory, in under five minutes.
 
 ## Task

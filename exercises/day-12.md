@@ -1,6 +1,7 @@
 # Day 12 — Scripted Layouts
 
 Goal: Replace manual setup with a repeatable script that
+tags: scripting layouts
 builds your workspace in seconds.
 
 ## Task

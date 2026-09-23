@@ -23,6 +23,7 @@ and prints the exercise to stdout.
 ./scripts/tmux-trainer cheat --all  # shortcuts from all exercises
 ./scripts/tmux-trainer review  | r  # random completed exercise as a drill
 ./scripts/tmux-trainer help    | h  # built-in man page
+./scripts/tmux-trainer --tag NAME   # filter exercises by tag
 ```
 
 ### How the exercise is selected

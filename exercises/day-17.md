@@ -1,6 +1,7 @@
 # Day 17 — AWS / Terraform Workspace
 
 Goal: Build a dedicated debugging session for cloud
+tags: scripting workflow
 infrastructure work — no more switching between random
 tabs.
 

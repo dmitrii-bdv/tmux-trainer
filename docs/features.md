@@ -109,17 +109,18 @@ formula, so the daily issue always matches the local script.
 ## Subcommands
 
 ```bash
-tmux-trainer              # today's exercise (SRS queue first)
-tmux-trainer 7            # a specific exercise by number
-tmux-trainer menu   | m   # fzf picker to jump to any exercise
-tmux-trainer done   | d   # mark completed, advance SRS interval
-tmux-trainer skip   | s   # queue for review tomorrow (SM-2)
-tmux-trainer check  | c   # verify today's tmux state
-tmux-trainer check 12     # verify a specific day's state
-tmux-trainer cheat        # shortcuts from exercises 1 to today
-tmux-trainer cheat --all  # shortcuts from all 24 exercises
-tmux-trainer review | r   # random completed exercise as a drill
-tmux-trainer help   | h   # show the built-in man page
+tmux-trainer               # today's exercise (SRS queue first)
+tmux-trainer 7             # a specific exercise by number
+tmux-trainer menu    | m   # fzf picker to jump to any exercise
+tmux-trainer done    | d   # mark completed, advance SRS interval
+tmux-trainer skip    | s   # queue for review tomorrow (SM-2)
+tmux-trainer check   | c   # verify today's tmux state
+tmux-trainer check 12      # verify a specific day's state
+tmux-trainer cheat         # shortcuts from exercises 1 to today
+tmux-trainer cheat --all   # shortcuts from all 24 exercises
+tmux-trainer review  | r   # random completed exercise as a drill
+tmux-trainer help    | h   # show the built-in man page
+tmux-trainer --tag NAME    # filter exercises by tag
 ```
 
 Every subcommand has a single-character alias (`m`, `d`, `s`, `c`,
@@ -145,6 +146,39 @@ interleave past material at will.
 Presents all 24 exercises in an interactive `fzf` picker. Select
 one to open it directly. Falls back to shell `select` if `fzf` is
 not installed.
+
+### --tag
+
+Filters the exercise list to those matching a tag and opens them
+in an fzf picker (or `select` if fzf is absent). If exactly one
+exercise matches, it opens directly.
+
+```bash
+tmux-trainer --tag copy-mode
+tmux-trainer --tag config
+tmux-trainer --tag scripting
+```
+
+Available tags:
+
+| Tag          | Exercises                          |
+|--------------|------------------------------------|
+| `sessions`   | 01, 04, 05, 08, 18                 |
+| `windows`    | 02, 04                             |
+| `panes`      | 03, 06, 09, 15, 21, 22             |
+| `layouts`    | 06, 12, 21, 22, 23                 |
+| `copy-mode`  | 07, 14                             |
+| `navigation` | 07, 08, 13                         |
+| `config`     | 10, 11, 19                         |
+| `status-bar` | 11                                 |
+| `scripting`  | 12, 13, 15, 16, 17, 20, 23, 24     |
+| `workflow`   | 04, 16, 17, 20, 24                 |
+| `recovery`   | 05, 18                             |
+| `sync`       | 09                                 |
+
+Each exercise file declares its own tags on a `tags:` line
+directly below the `Goal:` line, so the set is always
+authoritative.
 
 ### done / skip
 

@@ -1,6 +1,7 @@
 # Day 2 — Windows
 
 Goal: Navigate a multi-window tmux workspace without using the mouse.
+tags: windows
 
 ## Task
 

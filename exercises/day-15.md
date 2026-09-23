@@ -1,6 +1,7 @@
 # Day 15 — Capture Pane Output
 
 Goal: Save and inspect what a pane printed — useful for
+tags: panes scripting
 capturing the output of a long-running process after
 the fact.
 

@@ -1,6 +1,7 @@
 # Day 11 — Status Bar
 
 Goal: Make the tmux status bar show the information you
+tags: config status-bar
 actually need.
 
 ## Task

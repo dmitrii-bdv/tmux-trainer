@@ -1,6 +1,7 @@
 # Day 4 — Debugging Workspace
 
 Goal: Use tmux as a real debugging workspace rather than as a terminal toy.
+tags: sessions windows workflow
 
 ## Task
 

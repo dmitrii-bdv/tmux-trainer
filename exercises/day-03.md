@@ -1,6 +1,7 @@
 # Day 3 — Panes
 
 Goal: Build a small Kubernetes-style dashboard using tmux panes.
+tags: panes
 
 ## Task
 

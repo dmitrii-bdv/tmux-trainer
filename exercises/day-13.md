@@ -1,6 +1,7 @@
 # Day 13 — Target Syntax
 
 Goal: Address any pane in any window in any session
+tags: navigation scripting
 precisely using tmux target notation.
 
 ## Task

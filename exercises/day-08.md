@@ -1,7 +1,8 @@
 # Day 8 — Multiple Sessions
 
-Goal: Switch between multiple tmux sessions the way you
-switch between browser tabs — without leaving tmux.
+Goal: Switch between multiple tmux sessions the way you switch
+between browser tabs — without leaving tmux.
+tags: sessions navigation
 
 ## Task
 
@@ -29,14 +30,6 @@ From the shell:
 tmux ls
 tmux switch -t infra
 tmux attach -t notes
-```
-
-## Check
-
-```text
-session_exists  work
-session_exists  infra
-session_exists  notes
 ```
 
 ## Completion goal

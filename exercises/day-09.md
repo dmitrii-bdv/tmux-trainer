@@ -1,6 +1,7 @@
 # Day 9 — Pane Synchronization
 
 Goal: Send the same keystrokes to every pane at once —
+tags: panes sync
 useful for running a command on multiple hosts or
 directories simultaneously.
 

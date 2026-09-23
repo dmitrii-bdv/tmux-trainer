@@ -1,6 +1,7 @@
 # Day 23 — Asymmetric Layout Script
 
 Goal: Script a precise multi-pane layout by targeting
+tags: scripting layouts
 specific pane indices — the skill that turns a one-off
 setup into a repeatable command.
 

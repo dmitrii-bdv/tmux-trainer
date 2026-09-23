@@ -1,6 +1,7 @@
 # Day 16 — Multi-Repo Workspace Script
 
 Goal: Build a workspace script that sets up multiple
+tags: scripting workflow
 repositories at once — the kind of layout you'd open
 every morning.
 

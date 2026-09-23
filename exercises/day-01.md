@@ -1,6 +1,8 @@
 # Day 1 — Sessions
 
-Goal: Build muscle memory for creating, detaching from, listing, and reattaching to tmux sessions.
+Goal: Build muscle memory for creating, detaching from, listing,
+and reattaching to tmux sessions.
+tags: sessions
 
 ## Task
 

@@ -1,6 +1,7 @@
 # Day 21 — Sized Splits
 
 Goal: Control exact pane proportions instead of relying
+tags: panes layouts
 on tmux defaults — the prerequisite for building
 structured layouts.
 

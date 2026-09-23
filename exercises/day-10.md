@@ -1,6 +1,7 @@
 # Day 10 — tmux.conf Basics
 
 Goal: Give tmux a configuration that fits your hands,
+tags: config
 then reload it live without restarting anything.
 
 ## Task

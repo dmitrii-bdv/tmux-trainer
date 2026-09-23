@@ -1,6 +1,7 @@
 # Day 6 — Pane Layouts
 
 Goal: Cycle through built-in pane layouts instead of
+tags: panes layouts
 arranging panes by hand.
 
 ## Task

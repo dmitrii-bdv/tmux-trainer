@@ -1,6 +1,7 @@
 # Day 14 — Copy Mode II: Yank and Paste
 
 Goal: Copy text from the terminal without touching
+tags: copy-mode
 the mouse.
 
 ## Task

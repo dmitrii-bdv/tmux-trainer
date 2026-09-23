@@ -9,21 +9,6 @@ Effort: [S] hours · [M] days · [L] week+
 
 ## Tier 4 — Content and curriculum expansion
 
-### 15. Exercise tags and filtering [S]
-
-Add a `tags:` front-matter line to each exercise:
-
-```text
-tags: copy-mode navigation
-```
-
-```bash
-tmux-trainer --tag copy-mode
-```
-
-Lets users who join mid-cycle or want to drill a specific skill
-jump directly to relevant exercises.
-
 ### 17. Plugin-aware exercises (weeks 5–6) [M]
 
 Add 10 exercises covering tmux-resurrect (session save/restore

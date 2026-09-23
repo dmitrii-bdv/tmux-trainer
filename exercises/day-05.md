@@ -1,6 +1,7 @@
 # Day 5 — Recovery Drill
 
 Goal: Prove to yourself why persistent tmux sessions are useful.
+tags: sessions recovery
 
 ## Task
 

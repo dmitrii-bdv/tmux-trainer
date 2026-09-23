@@ -1,6 +1,7 @@
 # Day 22 — Side Panel
 
 Goal: Add a narrow file-browser strip to an existing
+tags: panes layouts
 window — the tmux equivalent of VS Code's Explorer.
 
 ## Task

@@ -1,6 +1,7 @@
 # Day 7 — Copy Mode I: Scrollback
 
 Goal: Navigate and search your terminal history without
+tags: copy-mode navigation
 leaving tmux.
 
 ## Task

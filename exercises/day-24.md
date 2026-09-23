@@ -1,6 +1,7 @@
 # Day 24 — Dev Workspace Setup
 
 Goal: Build a scripted single-window tmux layout that
+tags: scripting workflow
 mirrors a VS Code project view — file tree on the left,
 editor in the centre, two CLI panes stacked on the right
 — and reproduce it in one command.
