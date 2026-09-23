@@ -6,6 +6,21 @@ Effort: [S] hours · [M] days · [L] week+
 
 ## Content
 
+### tmux.conf fundamentals [S]
+
+Before styling, teach the config management workflow itself:
+
+- Where tmux looks for config (`~/.tmux.conf`, XDG path)
+- How to inspect live option values: `tmux show-options -g`
+- How to inspect keybindings: `tmux list-keys`
+- Live reload without restarting: `source-file` vs kill-server
+- How to test a single option inline: `tmux set-option -g ...`
+- Reading error output when a config line fails (`tmux -f /dev/null`)
+- Difference between global (`-g`), session, window, and pane scope
+
+Goal: user can confidently edit, reload, introspect, and debug
+their config without restarting tmux or losing sessions.
+
 ### tmux.conf style progression — three exercises [M]
 
 Three new exercises building on top of the day-10 config baseline.
