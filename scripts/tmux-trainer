@@ -309,6 +309,94 @@ _assert() {
   fi
 }
 
+# ── subcommand alias normalisation ────────────────────────────────────────
+case "${1:-}" in
+  r)             set -- review ;;
+  m)             set -- menu ;;
+  d)             set -- done ;;
+  s)             set -- skip "${@:2}" ;;
+  c)             set -- check "${@:2}" ;;
+  h|-h|--help)   set -- help ;;
+esac
+
+# ── subcommand: help ───────────────────────────────────────────────────────
+
+if [[ "${1:-}" == "help" ]]; then
+  cat <<'MANPAGE'
+
+NAME
+    tmux-trainer — daily tmux exercise trainer
+
+SYNOPSIS
+    tmux-trainer [DAY]
+    tmux-trainer <subcommand> [args]
+
+DESCRIPTION
+    Delivers one tmux exercise per working day. Tracks completions,
+    streaks, and spaced-repetition reviews. Run without arguments to
+    get today's exercise (or the next SRS review if one is due).
+
+SUBCOMMANDS
+    (no args)        today's exercise — SRS queue first
+    DAY              specific exercise by number (1–24)
+    menu    | m      pick any exercise with fzf
+    done    | d      mark current exercise completed
+    skip    | s      defer current exercise to SRS queue
+    skip N  | s N    defer a specific exercise
+    check   | c      verify your live tmux state
+    check N | c N    verify a specific day's state
+    cheat            shortcuts introduced up to today
+    cheat --all      shortcuts from all exercises
+    review  | r      open a random completed exercise as a drill
+    help    | h      show this page
+
+FILES
+    ~/.local/share/tmux-trainer/log      completion log
+    ~/.local/share/tmux-trainer/srs      SRS queue state
+    ~/.local/share/tmux-trainer/current  last opened exercise
+    /tmp/tmux-trainer-day-NN.md          annotatable working copy
+
+TMUX KEYBINDING
+    Trigger a random drill from any tmux window with Prefix+r.
+    Add to ~/.tmux.conf:
+
+        bind-key r run-shell "tmux-trainer review"
+
+EXAMPLES
+    tmux-trainer          today's exercise
+    tmux-trainer 7        exercise 7
+    tmux-trainer m        pick with fzf
+    tmux-trainer d        mark complete
+    tmux-trainer c        verify tmux state
+    tmux-trainer cheat    shortcut reference
+    tmux-trainer r        random drill
+
+MANPAGE
+  exit 0
+fi
+
+# ── subcommand: review ─────────────────────────────────────────────────────
+
+if [[ "${1:-}" == "review" ]]; then
+  if [[ ! -f "${LOG_FILE}" ]]; then
+    echo "No completed exercises yet — finish one first." >&2
+    exit 0
+  fi
+
+  mapfile -t _completed < <(
+    awk '/completed$/ {print $2}' "${LOG_FILE}" | sort -u
+  )
+
+  if [[ ${#_completed[@]} -eq 0 ]]; then
+    echo "No completed exercises yet — finish one first." >&2
+    exit 0
+  fi
+
+  _pick="${_completed[$(( RANDOM % ${#_completed[@]} ))]}"
+  printf "🎲 Random drill: Day %s\n\n" "${_pick}"
+  exec "$0" "$(( 10#${_pick} ))"
+fi
+
 # ── subcommand: check ──────────────────────────────────────────────────────
 
 if [[ "${1:-}" == "check" ]]; then

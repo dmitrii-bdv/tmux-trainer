@@ -29,19 +29,6 @@ in the pane itself.
 
 ## Tier 3 — Reduce daily friction
 
-### 11. Random review drill [M]
-
-Dep: state file (done).
-
-```bash
-tmux-trainer review
-```
-
-Pick a random `completed` exercise from the log and re-run it
-as a drill. Implements interleaved practice — mixing past and
-present material produces better long-term retention than blocked
-practice (the "desirable difficulty" effect).
-
 ---
 
 ## Tier 4 — Content and curriculum expansion

@@ -14,13 +14,15 @@ and prints the exercise to stdout.
 ```bash
 ./scripts/tmux-trainer              # today's exercise (SRS queue first)
 ./scripts/tmux-trainer 7            # a specific exercise by number
-./scripts/tmux-trainer menu         # fzf picker to jump to any exercise
-./scripts/tmux-trainer done         # mark completed, advance SRS interval
-./scripts/tmux-trainer skip         # queue for review tomorrow (SM-2)
-./scripts/tmux-trainer check        # verify today's tmux state
+./scripts/tmux-trainer menu    | m  # fzf picker to jump to any exercise
+./scripts/tmux-trainer done    | d  # mark completed, advance SRS interval
+./scripts/tmux-trainer skip    | s  # queue for review tomorrow (SM-2)
+./scripts/tmux-trainer check   | c  # verify today's tmux state
 ./scripts/tmux-trainer check 12     # verify a specific day's state
 ./scripts/tmux-trainer cheat        # shortcuts from exercises 1 to today
 ./scripts/tmux-trainer cheat --all  # shortcuts from all exercises
+./scripts/tmux-trainer review  | r  # random completed exercise as a drill
+./scripts/tmux-trainer help    | h  # built-in man page
 ```
 
 ### How the exercise is selected

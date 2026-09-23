@@ -111,13 +111,33 @@ formula, so the daily issue always matches the local script.
 ```bash
 tmux-trainer              # today's exercise (SRS queue first)
 tmux-trainer 7            # a specific exercise by number
-tmux-trainer menu         # fzf picker to jump to any exercise
-tmux-trainer done         # mark completed, advance SRS interval
-tmux-trainer skip         # queue for review tomorrow (SM-2)
-tmux-trainer check        # verify today's tmux state
+tmux-trainer menu   | m   # fzf picker to jump to any exercise
+tmux-trainer done   | d   # mark completed, advance SRS interval
+tmux-trainer skip   | s   # queue for review tomorrow (SM-2)
+tmux-trainer check  | c   # verify today's tmux state
 tmux-trainer check 12     # verify a specific day's state
 tmux-trainer cheat        # shortcuts from exercises 1 to today
 tmux-trainer cheat --all  # shortcuts from all 24 exercises
+tmux-trainer review | r   # random completed exercise as a drill
+tmux-trainer help   | h   # show the built-in man page
+```
+
+Every subcommand has a single-character alias (`m`, `d`, `s`, `c`,
+`r`, `h`).
+
+### help
+
+Prints a man-style page covering synopsis, all subcommands, file
+paths, the tmux keybinding tip, and usage examples.
+
+### review
+
+Picks a random exercise from your completion log and opens it as
+an unscheduled drill. Complements the SRS queue by letting you
+interleave past material at will.
+
+```text
+🎲 Random drill: Day 07
 ```
 
 ### menu
