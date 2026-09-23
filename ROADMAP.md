@@ -42,21 +42,6 @@ as a drill. Implements interleaved practice — mixing past and
 present material produces better long-term retention than blocked
 practice (the "desirable difficulty" effect).
 
-### 12. Deck-size guardrail [S]
-
-Dep: spaced repetition (done).
-
-Warn when more than 10 exercises are queued for spaced-repetition
-review:
-
-```text
-⚠ 11 reviews due — consider a catch-up session first.
-```
-
-Motor-skill research shows consolidation degrades when the learner
-is overloaded with too many new patterns per session. 5–10 is the
-effective ceiling.
-
 ---
 
 ## Tier 4 — Content and curriculum expansion

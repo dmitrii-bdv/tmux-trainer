@@ -540,6 +540,11 @@ echo
 STREAK="$(_streak)"
 PENDING="$(_srs_reviews_pending)"
 
+if [[ "${PENDING}" -gt 10 ]]; then
+  printf "⚠  %d reviews due — consider a catch-up session first.\n" "${PENDING}"
+  echo
+fi
+
 if [[ -n "${SRS_REVIEW}" ]]; then
   srs_reps="$(awk -v p="${DAY_PADDED}" '$1==p{print $3}' "${SRS_FILE}" 2>/dev/null)"
   srs_reps="${srs_reps:-0}"

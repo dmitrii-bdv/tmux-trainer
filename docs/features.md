@@ -243,6 +243,15 @@ Format: `EXERCISE_PAD<TAB>LAST_DATE<TAB>REPS`
 Only exercises explicitly skipped enter the queue. Completing
 a calendar exercise via `done` does not add it to SRS.
 
+### Deck-size guardrail
+
+When more than 10 exercises are pending review, a warning is
+printed before the exercise to prompt a catch-up session:
+
+```text
+⚠  11 reviews due — consider a catch-up session first.
+```
+
 ---
 
 ## macOS notification
