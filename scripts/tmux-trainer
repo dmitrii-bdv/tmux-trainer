@@ -653,6 +653,21 @@ if [[ "${1:-}" == "done" ]]; then
     _srs_update "${DAY_PADDED}" 1
     STREAK="$(_streak)"
     echo "✓ Day ${DAY_PADDED} marked as completed"
+    if [[ "${DAY_PADDED}" == "20" ]] && [[ -f "${LOG_DIR}/time_start" ]]; then
+      _ts_start="$(cat "${LOG_DIR}/time_start")"
+      _ts_end="$(date +%s)"
+      _elapsed=$(( _ts_end - _ts_start ))
+      rm -f "${LOG_DIR}/time_start"
+      _mins=$(( _elapsed / 60 ))
+      _secs=$(( _elapsed % 60 ))
+      if [[ "${_elapsed}" -le 300 ]]; then
+        printf "⏱  Completed in %dm %02ds  (target: < 5m)\n" "${_mins}" "${_secs}"
+      else
+        _over=$(( _elapsed - 300 ))
+        printf "⏱  Completed in %dm %02ds  (target: < 5m — over by %ds)\n" \
+          "${_mins}" "${_secs}" "${_over}"
+      fi
+    fi
     PENDING="$(_srs_reviews_pending)"
     if [[ "${PENDING}" -gt 0 ]]; then
       printf "📚 %d review(s) still due — run \`tmux-trainer\` to continue\n" "${PENDING}"
@@ -725,6 +740,11 @@ fi
 # Record which exercise is active so done/skip operate on the right one
 _ensure_log
 echo "${DAY_PADDED}" > "${CURRENT_FILE}"
+
+# Timed drill: record start time when day 20 opens
+if [[ "${DAY_PADDED}" == "20" ]]; then
+  date +%s > "${LOG_DIR}/time_start"
+fi
 
 # ── notification ──────────────────────────────────────────────────────────
 

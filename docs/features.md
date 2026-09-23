@@ -232,6 +232,29 @@ Earned once, stored in the log, printed immediately after `done`:
 
 ---
 
+## Timed mode (day 20)
+
+Day 20 — Final drill: SRE workspace — is designed to be completed
+from memory in under 5 minutes. The script records a start
+timestamp when day 20 is opened, then measures elapsed time when
+`tmux-trainer done` is called:
+
+```text
+⏱  Completed in 4m 22s  (target: < 5m)
+```
+
+Or if you went over:
+
+```text
+⏱  Completed in 6m 11s  (target: < 5m — over by 131s)
+```
+
+The timestamp is stored in `~/.local/share/tmux-trainer/time_start`
+and deleted after `done` reads it. Re-opening day 20 resets the
+clock.
+
+---
+
 ## Spaced repetition (SM-2)
 
 `tmux-trainer skip` queues the exercise for spaced review using an

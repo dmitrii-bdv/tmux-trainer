@@ -16,18 +16,6 @@ Deps listed only when a prior item is a hard prerequisite.
 
 ## Tier 4 — Content and curriculum expansion
 
-### 14. Timed mode for day-20 final drill [S]
-
-Dep: `done` subcommand (done).
-
-Record `time_start` when day 20 opens. When `tmux-trainer done`
-is called, compute elapsed time and compare against the 5-minute
-target:
-
-```text
-✓ Completed in 4m 22s  (target: < 5m)
-```
-
 ### 15. Exercise tags and filtering [S]
 
 Add a `tags:` front-matter line to each exercise:
