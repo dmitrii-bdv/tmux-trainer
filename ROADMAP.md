@@ -63,6 +63,65 @@ and time. No plugins needed. Teaches `#(shell-command)` and
 Final step layers Catppuccin colours on top of the DevOps bar —
 style without a full framework.
 
+### jq exercises — filter and transform JSON [M]
+
+After tmux basics are complete, introduce `jq` as a natural next tool
+for DevOps and shell workflows. Source exercises from
+[dmitrii-bdv/jq](https://github.com/dmitrii-bdv/jq).
+
+Planned exercise tracks:
+
+**Exercise A — jq basics [S]**
+
+Identity, field access (`.field`, `.[0]`), pipe (`|`), and `keys`.
+Goal: user can extract a value from any JSON API response.
+
+**Exercise B — Selecting and filtering [S]**
+
+`select/1`, `map/1`, `arrays`, `objects`, `has/1`, `in/1`.
+Goal: user can filter arrays and objects by predicate.
+
+**Exercise C — Transforming output [S]**
+
+`{key: .val}` object construction, `@base64`, `@csv`, `@tsv`,
+`@json`, `@text`. Goal: user can reshape JSON into a target format.
+
+**Exercise D — Real-world pipelines [M]**
+
+Combine `jq` with `curl`, `aws`, `kubectl`, and `docker` output.
+Examples: parse ECS task arns, extract pod names, iterate ECR tags.
+Goal: user can slot `jq` into any shell pipeline without googling
+the syntax each time.
+
+### xargs exercises — build and run commands from input [M]
+
+After jq, introduce `xargs` as the glue that turns pipeline output
+into command arguments. Complements jq-based workflows naturally.
+
+**Exercise A — xargs basics [S]**
+
+Default behaviour (split on whitespace/newlines), `-n` (args per
+call), `-I{}` (placeholder). Goal: user can pass `find` or `echo`
+output as arguments to any command.
+
+**Exercise B — Parallel execution [S]**
+
+`-P <n>` for parallel workers, combining with `-n 1`.
+Goal: user can fan out a slow command (e.g. `curl`, `aws`) across
+many inputs without writing a loop.
+
+**Exercise C — Safe handling of filenames [S]**
+
+`-0` with `find -print0` / `printf '%s\0'` to handle spaces and
+special characters. Goal: user never breaks on filenames with spaces.
+
+**Exercise D — Real-world pipelines [M]**
+
+Combine `xargs` with `jq`, `aws`, `kubectl`, `docker`, and `git`.
+Examples: delete stale ECR images, run `kubectl describe` on a list
+of pods, bulk-clone repos. Goal: user can replace slow sequential
+shell loops with a single composable pipeline.
+
 ### Plugin-aware exercises [M]
 
 Add exercises covering tmux-resurrect, tmux-continuum, and
