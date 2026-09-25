@@ -6,8 +6,8 @@ All currently implemented features of tmux-trainer.
 
 ## Curriculum
 
-Five weeks, 24 exercises. After week 5 the cycle repeats, so
-skills stay sharp through repetition.
+27 exercises across six weeks. After the last week the cycle
+repeats, so skills stay sharp through repetition.
 
 ### Week 1 — Foundations
 
@@ -58,6 +58,14 @@ skills stay sharp through repetition.
 | 23  | Asymmetric layout script | script a custom non-standard layout      |
 | 24  | Dev workspace setup      | full dev workspace script from scratch   |
 
+### Week 6 — Config Mastery
+
+| Day | Topic                        | What you practise                         |
+|-----|------------------------------|-------------------------------------------|
+| 25  | tmux.conf workflow           | inspect, scope, reload, debug config      |
+| 26  | Minimal modern status bar    | format strings, path, time, window style  |
+| 27  | Catppuccin theme via TPM     | plugin lifecycle, flavor, status modules  |
+
 ### Progression at a glance
 
 ```text
@@ -66,6 +74,7 @@ Week 2   You can navigate fluently and configure the basics.
 Week 3   You script your environment instead of clicking.
 Week 4   tmux is your primary working surface.
 Week 5   You build precise, scripted layouts from memory.
+Week 6   You own your config — theme, status bar, plugins.
 ```
 
 ---
@@ -117,7 +126,7 @@ tmux-trainer skip    | s   # queue for review tomorrow (SM-2)
 tmux-trainer check   | c   # verify today's tmux state
 tmux-trainer check 12      # verify a specific day's state
 tmux-trainer cheat         # shortcuts from exercises 1 to today
-tmux-trainer cheat --all   # shortcuts from all 24 exercises
+tmux-trainer cheat --all   # shortcuts from all exercises
 tmux-trainer review  | r   # random completed exercise as a drill
 tmux-trainer help    | h   # show the built-in man page
 tmux-trainer --tag NAME    # filter exercises by tag
@@ -143,9 +152,9 @@ interleave past material at will.
 
 ### menu
 
-Presents all 24 exercises in an interactive `fzf` picker. Select
-one to open it directly. Falls back to shell `select` if `fzf` is
-not installed.
+Presents all exercises in an interactive `fzf` picker. Select one
+to open it directly. Falls back to shell `select` if `fzf` is not
+installed.
 
 ### --tag
 
@@ -161,20 +170,21 @@ tmux-trainer --tag scripting
 
 Available tags:
 
-| Tag          | Exercises                          |
-|--------------|------------------------------------|
-| `sessions`   | 01, 04, 05, 08, 18                 |
-| `windows`    | 02, 04                             |
-| `panes`      | 03, 06, 09, 15, 21, 22             |
-| `layouts`    | 06, 12, 21, 22, 23                 |
-| `copy-mode`  | 07, 14                             |
-| `navigation` | 07, 08, 13                         |
-| `config`     | 10, 11, 19                         |
-| `status-bar` | 11                                 |
-| `scripting`  | 12, 13, 15, 16, 17, 20, 23, 24     |
-| `workflow`   | 04, 16, 17, 20, 24                 |
-| `recovery`   | 05, 18                             |
-| `sync`       | 09                                 |
+| Tag          | Exercises                              |
+|--------------|----------------------------------------|
+| `sessions`   | 01, 04, 05, 08, 18                     |
+| `windows`    | 02, 04                                 |
+| `panes`      | 03, 06, 09, 15, 21, 22                 |
+| `layouts`    | 06, 12, 21, 22, 23                     |
+| `copy-mode`  | 07, 14                                 |
+| `navigation` | 07, 08, 13                             |
+| `config`     | 10, 11, 19, 25, 26, 27                 |
+| `status-bar` | 11, 26, 27                             |
+| `plugins`    | 27                                     |
+| `scripting`  | 12, 13, 15, 16, 17, 20, 23, 24         |
+| `workflow`   | 04, 16, 17, 20, 24                     |
+| `recovery`   | 05, 18                                 |
+| `sync`       | 09                                     |
 
 Each exercise file declares its own tags on a `tags:` line
 directly below the `Goal:` line, so the set is always
@@ -474,7 +484,7 @@ source /usr/local/etc/bash_completion.d/tmux-trainer
 
 Or use `make install-completions` to copy both at once.
 
-Completions cover: all subcommands, day numbers 1–24, `--tag`
+Completions cover: all subcommands, day numbers 1–27, `--tag`
 values, `--all` after `cheat`, and day numbers after `check`/`skip`.
 
 ---
