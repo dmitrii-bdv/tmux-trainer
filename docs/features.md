@@ -6,7 +6,7 @@ All currently implemented features of tmux-trainer.
 
 ## Curriculum
 
-33 exercises across six weeks. After the last week the cycle
+40 exercises across six weeks. After the last week the cycle
 repeats, so skills stay sharp through repetition.
 
 ### Week 1 — Foundations
@@ -71,6 +71,13 @@ repeats, so skills stay sharp through repetition.
 | 31  | jq selecting and filtering   | `select`, `map`, type guards, `has`       |
 | 32  | jq transforming output       | object/array construction, `@csv`, `@tsv` |
 | 33  | jq real-world pipelines      | curl, aws, kubectl, docker, xargs         |
+| 34  | xargs basics                 | default split, `-n`, `-I{}`, `-t`         |
+| 35  | xargs parallel execution     | `-P N`, fan-out, timing                   |
+| 36  | xargs safe filenames         | `-0`, `find -print0`, null delimiter      |
+| 37  | xargs real-world pipelines   | jq, aws, kubectl, docker, git             |
+| 38  | Session persistence          | tmux-resurrect save/restore               |
+| 39  | Automatic saves              | tmux-continuum interval, auto-restore     |
+| 40  | Text grabbing                | tmux-fingers hints, custom patterns       |
 
 ### Progression at a glance
 
@@ -186,11 +193,12 @@ Available tags:
 | `navigation` | 07, 08, 13                             |
 | `config`     | 10, 11, 19, 25, 26, 27, 28, 29         |
 | `status-bar` | 11, 26, 27, 28                         |
-| `plugins`    | 27                                     |
-| `scripting`  | 12, 13, 15, 16, 17, 20, 23, 24, 28, 33 |
+| `plugins`    | 27, 38, 39, 40                         |
+| `scripting`  | 12, 13, 15-17, 20, 23, 24, 28, 33-37   |
 | `jq`         | 30, 31, 32, 33                         |
+| `xargs`      | 34, 35, 36, 37                         |
 | `workflow`   | 04, 16, 17, 20, 24                     |
-| `recovery`   | 05, 18                                 |
+| `recovery`   | 05, 18, 38, 39                         |
 | `sync`       | 09                                     |
 
 Each exercise file declares its own tags on a `tags:` line
