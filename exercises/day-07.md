@@ -47,6 +47,12 @@ q   or   Escape
 Enter copy mode, scroll to the first line of the output
 you generated, search for "line 2", and exit cleanly.
 
+## Check
+
+```text
+pane_contains  .  line 50
+```
+
 ---
 
 ## Workflow

@@ -38,9 +38,18 @@ window.pane      current session, named window
 
 ## Completion goal
 
-Create two sessions with two windows each, then use
-`tmux send-keys -t` to run `date` in a specific pane
-in the other session — without switching to it.
+Create two sessions named `nav-a` and `nav-b`, each with two
+windows. Then use `tmux send-keys -t nav-b:2` to run `date` in
+the second window of `nav-b` — without switching to it.
+
+## Check
+
+```text
+session_exists  nav-a
+session_exists  nav-b
+window_count    nav-a 2
+window_count    nav-b 2
+```
 
 ---
 
