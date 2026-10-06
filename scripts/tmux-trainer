@@ -836,12 +836,18 @@ fi
 # ── webhook ────────────────────────────────────────────────────────────────
 
 if [[ -n "${WEBHOOK_URL}" ]]; then
-  _payload="{\"text\":\"tmux trainer — ${TITLE}\\nGoal: ${SUMMARY}\\nRun: tmux-trainer\"}"
+  _msg="tmux trainer — ${TITLE}\\nGoal: ${SUMMARY}\\nRun: tmux-trainer"
+  # Discord uses "content"; Telegram and Slack use "text"
+  if [[ "${WEBHOOK_URL}" == *"discord.com/api/webhooks"* ]]; then
+    _payload="{\"content\":\"${_msg}\"}"
+  else
+    _payload="{\"text\":\"${_msg}\"}"
+  fi
   curl -s -o /dev/null --max-time 5 \
     -H 'Content-Type: application/json' \
     -d "${_payload}" \
     "${WEBHOOK_URL}" || true
-  unset _payload
+  unset _payload _msg
 fi
 
 # ── display ────────────────────────────────────────────────────────────────

@@ -433,7 +433,7 @@ file is sourced as bash, so use standard variable assignments:
 # Override log location
 LOG_DIR="${HOME}/my-logs/tmux-trainer"
 
-# Webhook URL for daily reminders (Telegram, Slack)
+# Webhook URL for daily reminders (Telegram, Slack, Discord)
 WEBHOOK_URL=""
 
 # Disable emoji and colour output
@@ -442,11 +442,11 @@ NO_COLOR=1
 
 Available overrides:
 
-| Variable      | Default                       | Effect                                  |
-|---------------|-------------------------------|-----------------------------------------|
-| `LOG_DIR`     | `~/.local/share/tmux-trainer` | Move log and SRS files                  |
-| `WEBHOOK_URL` | `""`                          | POST `{"text":"..."}` to Telegram/Slack |
-| `NO_COLOR`    | unset                         | Force plain-text output                 |
+| Variable      | Default                       | Effect                                          |
+|---------------|-------------------------------|-------------------------------------------------|
+| `LOG_DIR`     | `~/.local/share/tmux-trainer` | Move log and SRS files                          |
+| `WEBHOOK_URL` | `""`                          | POST to Telegram, Slack, or Discord on each run |
+| `NO_COLOR`    | unset                         | Force plain-text output                         |
 
 ---
 
