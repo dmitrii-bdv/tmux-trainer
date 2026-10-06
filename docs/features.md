@@ -6,7 +6,7 @@ All currently implemented features of tmux-trainer.
 
 ## Curriculum
 
-28 exercises across six weeks. After the last week the cycle
+33 exercises across six weeks. After the last week the cycle
 repeats, so skills stay sharp through repetition.
 
 ### Week 1 — Foundations
@@ -66,6 +66,11 @@ repeats, so skills stay sharp through repetition.
 | 26  | Minimal modern status bar    | format strings, path, time, window style  |
 | 27  | Catppuccin theme via TPM     | plugin lifecycle, flavor, status modules  |
 | 28  | DevOps dashboard status bar  | `#(cmd)`, two-line layout, live context   |
+| 29  | tmux.conf deeper inspection  | server opts, `-t` targeting, key tables   |
+| 30  | jq basics                    | identity, field access, pipe, `keys`      |
+| 31  | jq selecting and filtering   | `select`, `map`, type guards, `has`       |
+| 32  | jq transforming output       | object/array construction, `@csv`, `@tsv` |
+| 33  | jq real-world pipelines      | curl, aws, kubectl, docker, xargs         |
 
 ### Progression at a glance
 
@@ -179,10 +184,11 @@ Available tags:
 | `layouts`    | 06, 12, 21, 22, 23                     |
 | `copy-mode`  | 07, 14                                 |
 | `navigation` | 07, 08, 13                             |
-| `config`     | 10, 11, 19, 25, 26, 27, 28             |
+| `config`     | 10, 11, 19, 25, 26, 27, 28, 29         |
 | `status-bar` | 11, 26, 27, 28                         |
 | `plugins`    | 27                                     |
-| `scripting`  | 12, 13, 15, 16, 17, 20, 23, 24, 28    |
+| `scripting`  | 12, 13, 15, 16, 17, 20, 23, 24, 28, 33 |
+| `jq`         | 30, 31, 32, 33                         |
 | `workflow`   | 04, 16, 17, 20, 24                     |
 | `recovery`   | 05, 18                                 |
 | `sync`       | 09                                     |
