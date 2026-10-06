@@ -6,7 +6,7 @@ All currently implemented features of tmux-trainer.
 
 ## Curriculum
 
-40 exercises across six weeks. After the last week the cycle
+41 exercises across six weeks. After the last week the cycle
 repeats, so skills stay sharp through repetition.
 
 ### Week 1 — Foundations
@@ -78,6 +78,7 @@ repeats, so skills stay sharp through repetition.
 | 38  | Session persistence          | tmux-resurrect save/restore               |
 | 39  | Automatic saves              | tmux-continuum interval, auto-restore     |
 | 40  | Text grabbing                | tmux-fingers hints, custom patterns       |
+| 41  | Live weather panel           | wttr.in, pane lifecycle, multi-city       |
 
 ### Progression at a glance
 
@@ -187,8 +188,8 @@ Available tags:
 |--------------|----------------------------------------|
 | `sessions`   | 01, 04, 05, 08, 18                     |
 | `windows`    | 02, 04                                 |
-| `panes`      | 03, 06, 09, 15, 21, 22                 |
-| `layouts`    | 06, 12, 21, 22, 23                     |
+| `panes`      | 03, 06, 09, 15, 21, 22, 41             |
+| `layouts`    | 06, 12, 21, 22, 23, 41                 |
 | `copy-mode`  | 07, 14                                 |
 | `navigation` | 07, 08, 13                             |
 | `config`     | 10, 11, 19, 25, 26, 27, 28, 29         |
@@ -441,11 +442,11 @@ NO_COLOR=1
 
 Available overrides:
 
-| Variable      | Default                                    | Effect                      |
-|---------------|--------------------------------------------|-----------------------------|
-| `LOG_DIR`     | `~/.local/share/tmux-trainer`              | Move log and SRS files      |
-| `WEBHOOK_URL` | `""`                                       | POST daily reminder payload |
-| `NO_COLOR`    | unset                                      | Force plain-text output     |
+| Variable      | Default | Effect                                             |
+|---------------|---------|----------------------------------------------------|
+| `LOG_DIR`     | `""`    | Move log and SRS files                             |
+| `WEBHOOK_URL` | `""`    | POST `{"text":"..."}` to Telegram or Slack         |
+| `NO_COLOR`    | unset   | Force plain-text output                            |
 
 ---
 
