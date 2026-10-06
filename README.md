@@ -3,7 +3,7 @@
 Learn tmux by doing — one short exercise each working day,
 delivered as a macOS notification at 09:00.
 
-The curriculum spans six weeks and 27 exercises. It starts
+The curriculum spans six weeks and 28 exercises. It starts
 with the basics (sessions, windows, panes), progresses through
 automated workspace scripts and a timed SRE drill, and finishes
 with config mastery — status bar, themes, and plugins. After six
