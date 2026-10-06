@@ -128,6 +128,35 @@ Add exercises covering tmux-resurrect, tmux-continuum, and
 tmux-fingers. No comparable exercises exist in any other
 learn-tmux repo found.
 
+### wttr.in weather panel [S]
+
+Fun real-world exercise: embed a live weather panel using
+[wttr.in](https://github.com/chubin/wttr.in) in a tmux layout,
+then teach how to recover/reload it after it goes stale.
+
+What the exercise covers:
+
+- Opening a dedicated pane with `watch -n 3600 curl -s wttr.in`
+  (or a one-shot `curl wttr.in/?0` in a narrower pane)
+- Recognising a "dead" pane (process exited, blank output)
+- Recovering it: `tmux send-keys -t <target-pane> "curl wttr.in" Enter`
+- Making it durable: a small shell function or script the user can
+  bind to a key (`bind W run-shell "tmux send-keys -t ...`)
+- Optional: use `tmux respawn-pane -k` to restart a dead pane in place
+
+**Extension — multi-city layout:**
+
+Split the weather pane into 2–3 vertical sub-panes, one per city
+the user cares about (`curl wttr.in/Berlin`, `curl wttr.in/Tokyo`,
+etc.). Teaches `split-window` chaining and even-horizontal layout
+(`select-layout even-horizontal`). The user parameterises the city
+list via a shell array so adding a third city is a one-line change.
+The recovery keybind loops over the array and respawns all panes.
+
+Goal: user understands the pane lifecycle (create → run → die →
+recover) and can wire any persistent side-panel into their workflow,
+not just weather.
+
 ---
 
 ## Infrastructure
