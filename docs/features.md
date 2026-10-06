@@ -500,7 +500,7 @@ source /usr/local/etc/bash_completion.d/tmux-trainer
 
 Or use `make install-completions` to copy both at once.
 
-Completions cover: all subcommands, day numbers 1–27, `--tag`
+Completions cover: all subcommands, day numbers 1–41, `--tag`
 values, `--all` after `cheat`, and day numbers after `check`/`skip`.
 
 ---

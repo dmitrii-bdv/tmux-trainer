@@ -16,10 +16,11 @@ _tmux_trainer() {
 
   tags=(
     sessions windows panes layouts copy-mode navigation
-    config status-bar scripting workflow recovery sync
+    config status-bar plugins scripting workflow recovery sync
+    jq xargs
   )
 
-  days=( {1..24} )
+  days=( {1..41} )
 
   case "${words[2]}" in
     --tag)

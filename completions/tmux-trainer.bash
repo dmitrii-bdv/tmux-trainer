@@ -5,9 +5,9 @@ _tmux_trainer() {
 
   local subcommands="menu done skip check cheat review help --tag"
   local tags="sessions windows panes layouts copy-mode navigation \
-config status-bar scripting workflow recovery sync"
+config status-bar plugins scripting workflow recovery sync jq xargs"
   local days
-  days="$(seq 1 24 | tr '\n' ' ')"
+  days="$(seq 1 41 | tr '\n' ' ')"
 
   case "${prev}" in
     --tag)
