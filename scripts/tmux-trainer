@@ -833,6 +833,17 @@ elif command -v notify-send >/dev/null 2>&1; then
   notify-send "tmux trainer — ${TITLE}" "${NOTIFICATION}"
 fi
 
+# ── webhook ────────────────────────────────────────────────────────────────
+
+if [[ -n "${WEBHOOK_URL}" ]]; then
+  _payload="{\"text\":\"tmux trainer — ${TITLE}\\nGoal: ${SUMMARY}\\nRun: tmux-trainer\"}"
+  curl -s -o /dev/null --max-time 5 \
+    -H 'Content-Type: application/json' \
+    -d "${_payload}" \
+    "${WEBHOOK_URL}" || true
+  unset _payload
+fi
+
 # ── display ────────────────────────────────────────────────────────────────
 
 echo
