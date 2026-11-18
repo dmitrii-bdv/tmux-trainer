@@ -25,6 +25,8 @@ and prints the exercise to stdout.
 ./scripts/tmux-trainer cheat        # shortcuts from exercises 1 to today
 ./scripts/tmux-trainer cheat --all  # shortcuts from all exercises
 ./scripts/tmux-trainer review  | r  # random completed exercise as a drill
+./scripts/tmux-trainer exam [MIN]    # timed drill; timer pane scores it
+./scripts/tmux-trainer exam finish   # score the running exam now
 ./scripts/tmux-trainer help    | h  # built-in man page
 ./scripts/tmux-trainer --tag NAME   # filter exercises by tag
 ./scripts/tmux-trainer lint          # validate all exercise files

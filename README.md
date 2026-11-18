@@ -65,6 +65,7 @@ tmux-trainer done      # mark today complete
 tmux-trainer skip      # defer to spaced-repetition queue
 tmux-trainer check     # verify your tmux state
 tmux-trainer cheat     # shortcuts introduced so far
+tmux-trainer exam      # 20-minute timed drill (run inside tmux)
 tmux-trainer --tag config  # filter by tag
 ```
 

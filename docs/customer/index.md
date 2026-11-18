@@ -24,6 +24,7 @@ tmux-trainer check        # verify your tmux state
 tmux-trainer done         # mark the exercise completed
 tmux-trainer skip         # queue it for a later review
 tmux-trainer cheat        # shortcuts you have learned so far
+tmux-trainer exam         # 20-minute timed drill (inside tmux)
 tmux-trainer help         # full command list
 ```
 
