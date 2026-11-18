@@ -294,6 +294,32 @@ Earned once, stored in the log, printed immediately after `done`:
 
 ---
 
+## Exam mode
+
+A 20-minute timed drill over exercises you have already completed.
+
+```bash
+tmux new -s exam                # exam mode needs tmux
+tmux-trainer exam               # 20 minutes (default)
+tmux-trainer exam 15            # any length in minutes
+tmux-trainer exam finish        # score now instead of waiting
+```
+
+- **Exercises:** five completed exercises, least-used first, so every
+  exercise comes up across exams.
+- **Timer:** a three-line pane opens below your current window. Focus
+  stays where it was.
+- **Task sheet:** the Task sections are written to
+  `/tmp/tmux-trainer-exam.md`.
+- **Scoring:** when the timer ends, every exercise's checks run against
+  your live tmux state. The score is shown in the timer pane and in the
+  tmux status message. Full details go to
+  `/tmp/tmux-trainer-exam-results.txt`.
+- **History:** each exam and its score are written to the log, and an
+  exam is never run twice at the same time.
+
+---
+
 ## Timed mode (day 20)
 
 Day 20 — Final drill: SRE workspace — is designed to be completed

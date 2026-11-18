@@ -5,7 +5,7 @@ _tmux_trainer() {
   cur="${COMP_WORDS[COMP_CWORD]}"
   prev="${COMP_WORDS[COMP_CWORD-1]}"
 
-  subcommands="menu done skip check cheat review help lint --tag --version"
+  subcommands="menu done skip check cheat review exam help lint --tag --version"
   days="$(tmux-trainer --list-days 2>/dev/null | tr '\n' ' ')"
   tags="$(tmux-trainer --list-tags 2>/dev/null | tr '\n' ' ')"
 

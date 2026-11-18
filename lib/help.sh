@@ -12,6 +12,8 @@ skip [N]|s [N]|defer the current (or Nth) exercise to the SRS queue
 check [N]|c [N]|verify your live tmux state against the exercise
 cheat [--all]||print Ctrl-b shortcuts (up to today, or all with --all)
 review|r|open a random completed exercise as a drill
+exam [MIN]||timed mixed drill over completed exercises (inside tmux)
+exam finish||score the running exam now
 --tag NAME||filter exercises by tag and pick one with fzf
 lint||validate all exercise files (for contributors)
 help|h|show this page
