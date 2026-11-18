@@ -4,6 +4,15 @@ All notable changes to tmux-trainer are documented here. The format
 follows [Keep a Changelog](https://keepachangelog.com/), and versions
 follow [Semantic Versioning](https://semver.org/).
 
+## v1.3.0 - 2026-11-18
+
+### Added
+
+- Clickable macOS notifications. With terminal-notifier installed, clicking
+  the daily notification opens the default terminal with today's exercise.
+  Without it, the notification works as before.
+- Launcher-opened windows do not send a second notification or webhook post.
+
 ## v1.2.0 - 2026-11-18
 
 ### Added

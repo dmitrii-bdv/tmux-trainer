@@ -391,9 +391,23 @@ printed before the exercise to prompt a catch-up session:
 
 Fires on every run. Platform is detected automatically:
 
-- **macOS** — `osascript` (title, subtitle, body)
+- **macOS with terminal-notifier** — a clickable notification. Clicking
+  it opens your default terminal with today's exercise, the same output
+  as `tmux-trainer` run by hand. The shell stays open afterwards.
+- **macOS without terminal-notifier** — `osascript` (title, subtitle,
+  body). Not clickable.
 - **Linux** — `notify-send` (title + subtitle in one field, body)
 - **Other** — skipped silently if neither tool is available
+
+Clickable notifications need [terminal-notifier](https://github.com/julienXX/terminal-notifier):
+
+```bash
+brew install terminal-notifier
+```
+
+The first time, allow notifications for terminal-notifier in System
+Settings → Notifications. The window opens in the app macOS uses for
+`.command` files, which is Terminal.app unless you changed it.
 
 Notification content:
 

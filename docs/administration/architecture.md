@@ -34,7 +34,7 @@ directly; they go through `catalog.sh` and `state.sh`.
 | `state.sh` | `_log_append`, `_streak`, `_week_bar`, `_check_badges` | Plain-text log |
 | `srs.sh` | `_srs_update`, `_srs_due_list` | Intervals 1, 3, 7, 21 days |
 | `assert.sh` | `_split_args`, `_validate_assertion_line`, `_assert` | Quoted arguments supported |
-| `notify.sh` | `notify_desktop`, `send_webhook`, escapers | Escapes JSON and AppleScript |
+| `notify.sh` | `notify_desktop`, `_write_launcher`, `send_webhook` | terminal-notifier click action, osascript fallback, escapers |
 | `help.sh` | `_command_rows`, `cmd_help`, `_generate_man` | Single source for help |
 | `commands/*.sh` | `cmd_show`, `cmd_done`, `cmd_check`, … | Return codes map to exit codes |
 | `commands/exam.sh` | `cmd_exam`, `_exam_pick`, `_exam_finish`, `_exam_timer` | State in `LOG_DIR/exam`; countdown runs in a tmux split pane |
