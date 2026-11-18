@@ -4,7 +4,15 @@ Effort: [S] hours · [M] days · [L] week+
 
 ---
 
-## Open
+## Next
+
+1. **Telegram integration** [M]
+2. **Slack integration** [M]
+3. **Discord integration** [M]
+
+---
+
+## Ideas
 
 ### Homebrew formula [L]
 
