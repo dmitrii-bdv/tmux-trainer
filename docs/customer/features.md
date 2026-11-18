@@ -113,7 +113,7 @@ Target time per session: 10–15 minutes.
 
 ## Exercise selection
 
-The script is stateless. It counts `exercises/day-*.md` files at
+The tool keeps no selection state. It counts `exercises/day-*.md` files at
 runtime and computes today's exercise from the ISO week and weekday:
 
 ```text
@@ -124,8 +124,8 @@ exercise = ((ISO_week - 1) × 5 + weekday - 1) % total + 1
 Weekdays are 1 (Mon) through 5 (Fri). Weekends fall back to 1.
 
 Adding a new exercise file automatically extends the cycle — no
-code changes needed. The GitHub Actions workflow uses the same
-formula, so the daily issue always matches the local script.
+code changes needed. The daily reminder uses the same formula, so the
+reminder always matches the exercise you get locally.
 
 ---
 
@@ -144,6 +144,8 @@ tmux-trainer cheat --all   # shortcuts from all exercises
 tmux-trainer review  | r   # random completed exercise as a drill
 tmux-trainer help    | h   # show the built-in man page
 tmux-trainer --tag NAME    # filter exercises by tag
+tmux-trainer lint           # validate exercise files (for contributors)
+tmux-trainer --version      # print the version
 ```
 
 Every subcommand has a single-character alias (`m`, `d`, `s`, `c`,
@@ -410,7 +412,7 @@ launchctl kickstart -k gui/$(id -u)/com.local.tmux-trainer
 
 ## Symlink resolution
 
-The script resolves symlinks at runtime, so it always finds its
+The command resolves symlinks at runtime, so it always finds its
 exercises regardless of how it is invoked — directly, via a
 `~/.local/bin` symlink, or from any working directory.
 
@@ -500,8 +502,9 @@ source /usr/local/etc/bash_completion.d/tmux-trainer
 
 Or use `make install-completions` to copy both at once.
 
-Completions cover: all subcommands, day numbers 1–41, `--tag`
-values, `--all` after `cheat`, and day numbers after `check`/`skip`.
+Completions are generated from your installed exercises, so they
+cover all subcommands, every day number, every `--tag` value, `--all`
+after `cheat`, and day numbers after `check` and `skip`.
 
 ---
 

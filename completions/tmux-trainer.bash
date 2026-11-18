@@ -1,13 +1,13 @@
+# Days and tags come from the installed tool, so new exercises are picked
+# up without editing this file.
 _tmux_trainer() {
-  local cur prev
+  local cur prev subcommands days tags
   cur="${COMP_WORDS[COMP_CWORD]}"
   prev="${COMP_WORDS[COMP_CWORD-1]}"
 
-  local subcommands="menu done skip check cheat review help --tag"
-  local tags="sessions windows panes layouts copy-mode navigation \
-config status-bar plugins scripting workflow recovery sync jq xargs"
-  local days
-  days="$(seq 1 41 | tr '\n' ' ')"
+  subcommands="menu done skip check cheat review help lint --tag --version"
+  days="$(tmux-trainer --list-days 2>/dev/null | tr '\n' ' ')"
+  tags="$(tmux-trainer --list-tags 2>/dev/null | tr '\n' ' ')"
 
   case "${prev}" in
     --tag)

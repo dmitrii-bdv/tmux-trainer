@@ -2,7 +2,8 @@ BIN_DIR   ?= $(HOME)/.local/bin
 ZSH_COMP  ?= $(HOME)/.zsh/completions
 BASH_COMP ?= /usr/local/etc/bash_completion.d
 
-.PHONY: install install-completions install-launchd uninstall help
+.PHONY: install install-completions install-launchd uninstall help \
+	test lint lint-shell
 
 help:
 	@echo "Targets:"
@@ -10,6 +11,8 @@ help:
 	@echo "  install-completions install shell completions (bash + zsh)"
 	@echo "  install-launchd     install macOS launchd daily reminder"
 	@echo "  uninstall           remove symlink, man page, completions"
+	@echo "  test                shellcheck, exercise lint, bats tests"
+	@echo "  lint                validate exercise files"
 
 install:
 	@test -d "$(BIN_DIR)" || (echo "$(BIN_DIR) not found — create it first" && exit 1)
@@ -37,3 +40,12 @@ uninstall:
 	rm -f "$(ZSH_COMP)/_tmux_trainer"
 	rm -f "$(BASH_COMP)/tmux-trainer"
 	@echo "Uninstalled."
+
+lint-shell:
+	shellcheck -x scripts/tmux-trainer lib/*.sh lib/commands/*.sh
+
+lint:
+	"$(CURDIR)/scripts/tmux-trainer" lint
+
+test: lint-shell lint
+	bats --recursive tests

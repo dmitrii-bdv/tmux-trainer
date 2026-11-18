@@ -50,7 +50,7 @@ you generated, search for "line 2", and exit cleanly.
 ## Check
 
 ```text
-pane_contains  .  line 50
+pane_contains . "line 50"
 ```
 
 ---

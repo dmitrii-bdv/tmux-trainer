@@ -2,6 +2,9 @@
 
 All scripts live in `scripts/` and are executable (`chmod +x`).
 
+The `tmux-trainer` entry point is thin. Its logic lives in `lib/` and
+`lib/commands/`; see [architecture](architecture.md) for the module map.
+
 ## tmux-trainer
 
 **Path:** `scripts/tmux-trainer`
@@ -24,6 +27,8 @@ and prints the exercise to stdout.
 ./scripts/tmux-trainer review  | r  # random completed exercise as a drill
 ./scripts/tmux-trainer help    | h  # built-in man page
 ./scripts/tmux-trainer --tag NAME   # filter exercises by tag
+./scripts/tmux-trainer lint          # validate all exercise files
+./scripts/tmux-trainer --version     # print the version
 ```
 
 ### How the exercise is selected

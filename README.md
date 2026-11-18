@@ -39,8 +39,8 @@ make install-completions
 ```
 
 Enables `tmux-trainer <TAB>` for subcommands, day numbers, and
-`--tag` values. See [docs/features.md](docs/features.md) for
-shell-specific setup.
+`--tag` values. See [docs/customer/features.md](docs/customer/features.md)
+for shell-specific setup.
 
 ### 4. (Optional) macOS daily reminder
 
@@ -70,12 +70,17 @@ tmux-trainer --tag config  # filter by tag
 
 ## Documentation
 
-- [docs/features.md](docs/features.md) —
-  curriculum, all subcommands, tags, config, NO\_COLOR,
-  completions, spaced repetition, notifications
-- [docs/scripts.md](docs/scripts.md) — script reference
-- [docs/github-workflow.md](docs/github-workflow.md) —
-  GitHub Actions setup and Telegram configuration
+- [Customer docs](docs/customer/index.md) — start here:
+  [getting started](docs/customer/getting-started.md) and
+  [features](docs/customer/features.md)
+- [Administration docs](docs/administration/index.md) — architecture,
+  development, releases, scripts, and the GitHub reminder workflow
+
+## Development
+
+```bash
+make test    # ShellCheck, exercise lint, Bats tests
+```
 
 ## License
 
