@@ -19,6 +19,13 @@ Effort: [S] hours · [M] days · [L] week+
 `brew install tmux-trainer`. Only worth pursuing once the project
 has external users.
 
+### Website version [L]
+
+A browser version of tmux-trainer with the same exercises and an
+emulated tmux terminal, so people can practise without installing
+anything. Planned for some time in the future; no timeline yet. The
+CLI stays the primary product until then.
+
 ---
 
 ## Completed
