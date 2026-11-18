@@ -1,6 +1,3 @@
-# Local agent settings
-.claude/
-
 # macOS
 .DS_Store
 .AppleDouble

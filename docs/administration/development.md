@@ -19,9 +19,22 @@ make lint        # exercise lint only
 bats tests/cli.bats   # one test file
 ```
 
-CI runs the same steps (see
-[`.github/workflows/ci.yml`](../../.github/workflows/ci.yml)). A change
-is not ready to merge until `make test` passes.
+CI runs in [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml)
+as a chain of jobs:
+
+| Job | Runs when | Depends on | Purpose |
+| --- | --- | --- | --- |
+| `test` | every push and PR | nothing | ShellCheck, exercise lint, Bats |
+| `docs` | every push and PR | `test` | markdownlint on README, CHANGELOG, docs |
+| `release-check` | tags `v*` only | `test`, `docs` | tag matches version and CHANGELOG |
+| `ci-gate` | always | all of the above | single status to require in branch protection |
+
+If `test` fails, the dependent jobs are skipped and `ci-gate` fails.
+Require `ci-gate` on `main` so a red build blocks merging. The
+weekday reminder workflow is separate and is not gated, so a test
+failure does not silence the daily reminder.
+
+A change is not ready to merge until `make test` passes locally.
 
 ## Add an exercise
 
