@@ -69,7 +69,7 @@ jobs:
 
       - name: CHANGELOG has an entry for the tag
         run: |
-          grep -q "^## v${GITHUB_REF_NAME#v}\$" CHANGELOG.md || {
+          grep -qE "^## v${GITHUB_REF_NAME#v}( |\$)" CHANGELOG.md || {
             echo "CHANGELOG.md has no '## ${GITHUB_REF_NAME}' section" >&2
             exit 1
           }
