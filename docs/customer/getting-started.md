@@ -19,6 +19,7 @@ status bars, plugins, and more. After week six the cycle starts again.
 | [tmux](https://github.com/tmux/tmux) | Exercises run in tmux | `tmux -V` |
 | [bash](https://www.gnu.org/software/bash/) or [zsh](https://www.zsh.org/) | Runs the script | `echo $SHELL` |
 | [fzf](https://github.com/junegunn/fzf) (optional) | Interactive pickers | `fzf --version` |
+| [terminal-notifier](https://github.com/julienXX/terminal-notifier) (optional, macOS) | Clickable notifications | `terminal-notifier -version` |
 | `~/.local/bin` on `PATH` | Where the command is installed | `echo $PATH` |
 
 Install the packages you are missing. The links above point to each
@@ -51,7 +52,7 @@ make install
 tmux-trainer --version
 ```
 
-You should see `tmux-trainer 1.2.0`. `make install` also installs the
+You should see `tmux-trainer 1.3.0`. `make install` also installs the
 manual page, so `man tmux-trainer` works.
 
 If the version command is not found, check the `PATH` step above.
@@ -158,6 +159,18 @@ Good routine: open the trainer, do the exercise, run `check`, run
 
 Short aliases exist for most commands: `m` (menu), `d` (done),
 `s` (skip), `c` (check), `r` (review), `h` (help).
+
+## 9b. Optional: clickable notifications (macOS)
+
+With [terminal-notifier](https://github.com/julienXX/terminal-notifier),
+clicking the daily notification opens your default terminal with
+today's exercise:
+
+```bash
+brew install terminal-notifier
+```
+
+Allow it in System Settings → Notifications the first time.
 
 ## 10. Optional: shell completions
 

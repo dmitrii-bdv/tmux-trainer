@@ -11,7 +11,7 @@ setup() {
 @test "--version prints the release version" {
   run "${TT}" --version
   [ "$status" -eq 0 ]
-  [ "$output" = "tmux-trainer 1.2.0" ]
+  [ "$output" = "tmux-trainer 1.3.0" ]
 }
 
 @test "help lists every subcommand" {

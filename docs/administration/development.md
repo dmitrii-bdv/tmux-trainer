@@ -11,6 +11,7 @@ How to work on tmux-trainer: set up, test, add content, and release.
 | [ShellCheck](https://github.com/koalaman/shellcheck) | Shell lint | Homebrew `shellcheck` |
 | [jq](https://github.com/jqlang/jq) | Webhook test | Homebrew `jq` |
 | [fzf](https://github.com/junegunn/fzf) (optional) | Interactive pickers | Homebrew `fzf` |
+| [terminal-notifier](https://github.com/julienXX/terminal-notifier) (optional, macOS) | Clickable notifications | Homebrew `terminal-notifier` |
 
 ```bash
 brew install tmux bats-core shellcheck jq fzf   # macOS

@@ -60,7 +60,7 @@ cmd_show() {
 
   title="$(_ex_title "${exercise}")"
   summary="$(_ex_goal "${exercise}")"
-  notify_desktop "${title}" "${summary:+${summary} · }Run: tmux-trainer"
+  notify_desktop "${title}" "${summary:+${summary} · }Run: tmux-trainer" "${pad}"
   if [[ -n "${WEBHOOK_URL}" ]]; then
     send_webhook "${title}" "${summary}"
   fi

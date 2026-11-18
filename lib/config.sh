@@ -3,7 +3,7 @@
 # Configuration: version, paths, user config, display style.
 # Sourced by scripts/tmux-trainer after ROOT_DIR is set.
 
-TMUX_TRAINER_VERSION="1.2.0"
+TMUX_TRAINER_VERSION="1.3.0"
 
 EXERCISE_DIR="${TMUX_TRAINER_EXERCISE_DIR:-${ROOT_DIR}/exercises}"
 TEMP_DIR="${TMUX_TRAINER_TMP_DIR:-/tmp}"
