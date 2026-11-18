@@ -51,7 +51,7 @@ make install
 tmux-trainer --version
 ```
 
-You should see `tmux-trainer 1.1.0`. `make install` also installs the
+You should see `tmux-trainer 1.2.0`. `make install` also installs the
 manual page, so `man tmux-trainer` works.
 
 If the version command is not found, check the `PATH` step above.
