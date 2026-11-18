@@ -16,20 +16,24 @@ status bars, plugins, and more. After week six the cycle starts again.
 | Requirement | Why | How to check |
 | --- | --- | --- |
 | macOS or Linux | The tool is a shell script | `uname -s` |
-| tmux | Exercises run in tmux | `tmux -V` |
-| bash or zsh | Runs the script | `echo $SHELL` |
-| fzf (optional) | Interactive pickers | `fzf --version` |
+| [tmux](https://github.com/tmux/tmux) | Exercises run in tmux | `tmux -V` |
+| [bash](https://www.gnu.org/software/bash/) or [zsh](https://www.zsh.org/) | Runs the script | `echo $SHELL` |
+| [fzf](https://github.com/junegunn/fzf) (optional) | Interactive pickers | `fzf --version` |
 | `~/.local/bin` on `PATH` | Where the command is installed | `echo $PATH` |
 
-Install tmux if it is missing:
+Install the packages you are missing. The links above point to each
+project's source. Package commands:
 
 ```bash
-# macOS (Homebrew)
-brew install tmux
+# macOS (Homebrew, https://brew.sh)
+brew install tmux fzf
 
 # Debian / Ubuntu
-sudo apt-get install -y tmux
+sudo apt-get install -y tmux fzf
 ```
+
+Other systems: see the install instructions in the project pages linked
+above, for example the [tmux installation wiki](https://github.com/tmux/tmux/wiki/Installing).
 
 If `~/.local/bin` is not on your `PATH`, add this line to `~/.zshrc`
 or `~/.bashrc`, then open a new terminal:

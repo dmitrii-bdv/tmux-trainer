@@ -4,12 +4,21 @@ How to work on tmux-trainer: set up, test, add content, and release.
 
 ## Set up
 
+| Tool | Used for | Source |
+| --- | --- | --- |
+| [tmux](https://github.com/tmux/tmux) | Exercises and `check` | Homebrew `tmux` |
+| [Bats](https://github.com/bats-core/bats-core) | Test suite | Homebrew `bats-core` |
+| [ShellCheck](https://github.com/koalaman/shellcheck) | Shell lint | Homebrew `shellcheck` |
+| [jq](https://github.com/jqlang/jq) | Webhook test | Homebrew `jq` |
+| [fzf](https://github.com/junegunn/fzf) (optional) | Interactive pickers | Homebrew `fzf` |
+
 ```bash
-brew install bats-core shellcheck tmux jq   # macOS
-sudo apt-get install -y bats shellcheck tmux jq   # Debian / Ubuntu
+brew install tmux bats-core shellcheck jq fzf   # macOS
+sudo apt-get install -y tmux bats shellcheck jq fzf   # Debian / Ubuntu
 ```
 
-`fzf` is optional and only needed to try the interactive pickers.
+Homebrew is at <https://brew.sh>. The Debian and Ubuntu packages may be
+older than the Homebrew ones; CI uses the Ubuntu packages.
 
 ## Test and lint
 
