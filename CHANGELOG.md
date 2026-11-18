@@ -4,6 +4,15 @@ All notable changes to tmux-trainer are documented here. The format
 follows [Keep a Changelog](https://keepachangelog.com/), and versions
 follow [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+### Added
+
+- Exam mode: `tmux-trainer exam [MINUTES]` runs a 20-minute timed drill
+  over five completed exercises (least-used first). A countdown pane
+  scores the checks automatically when time runs out. `exam finish`
+  scores early.
+
 ## v1.1.0
 
 Architecture release. Command behaviour is unchanged except for the

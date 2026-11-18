@@ -11,6 +11,8 @@ LOG_DIR="${HOME}/.local/share/tmux-trainer"
 
 SRS_INTERVALS=(1 3 7 21)
 TIMED_DRILL_PAD="20"   # exercise that gets a timed-run record
+EXAM_SIZE="${EXAM_SIZE:-5}"                  # exercises per exam
+EXAM_DEFAULT_MINUTES="${EXAM_DEFAULT_MINUTES:-20}"  # default exam length
 
 # ── user config (~/.config/tmux-trainer/conf) ──────────────────────────────
 WEBHOOK_URL=""

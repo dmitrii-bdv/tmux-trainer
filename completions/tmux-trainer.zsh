@@ -12,6 +12,7 @@ _tmux_trainer() {
     'check:verify live tmux state'
     'cheat:print shortcut reference'
     'review:open a random completed exercise'
+    'exam:timed mixed drill over completed exercises'
     'help:show built-in man page'
     'lint:validate exercise files'
     '--tag:filter exercises by tag'

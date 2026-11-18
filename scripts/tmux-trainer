@@ -45,6 +45,7 @@ case "${1:-}" in
   "")              cmd_show ;;
   help)            cmd_help ;;
   review)          cmd_review ;;
+  exam)            shift; cmd_exam "$@" ;;
   check)           shift; cmd_check "$@" ;;
   cheat)           shift; cmd_cheat "$@" ;;
   menu)            cmd_menu ;;
