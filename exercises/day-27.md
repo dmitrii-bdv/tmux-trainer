@@ -156,7 +156,7 @@ respects those.
 ```text
 file_exists    ~/.tmux/plugins/tpm/tpm
 file_contains  ~/.tmux.conf @catppuccin_flavor
-file_contains  ~/.tmux.conf run '~/.tmux/plugins/tpm/tpm'
+file_contains ~/.tmux.conf "run '~/.tmux/plugins/tpm/tpm'"
 ```
 
 ---

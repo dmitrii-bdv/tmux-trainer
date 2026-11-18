@@ -47,7 +47,7 @@ and verify all 20 lines are present in the file.
 
 ```text
 file_exists     /tmp/pane-dump.txt
-file_contains   /tmp/pane-dump.txt  event 20
+file_contains /tmp/pane-dump.txt "event 20"
 ```
 
 ---

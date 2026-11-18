@@ -92,7 +92,7 @@ Confirm the listing shows the full filename with the space intact.
 ## Check
 
 ```text
-file_exists  /tmp/my file.txt
+file_exists "/tmp/my file.txt"
 ```
 
 ---

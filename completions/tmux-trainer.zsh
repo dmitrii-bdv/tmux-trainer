@@ -1,5 +1,7 @@
 #compdef tmux-trainer
 
+# Days and tags come from the installed tool, so new exercises are picked
+# up without editing this file.
 _tmux_trainer() {
   local -a subcommands tags days
 
@@ -11,16 +13,13 @@ _tmux_trainer() {
     'cheat:print shortcut reference'
     'review:open a random completed exercise'
     'help:show built-in man page'
+    'lint:validate exercise files'
     '--tag:filter exercises by tag'
+    '--version:print version'
   )
 
-  tags=(
-    sessions windows panes layouts copy-mode navigation
-    config status-bar plugins scripting workflow recovery sync
-    jq xargs
-  )
-
-  days=( {1..41} )
+  tags=( ${(f)"$(tmux-trainer --list-tags 2>/dev/null)"} )
+  days=( ${(f)"$(tmux-trainer --list-days 2>/dev/null)"} )
 
   case "${words[2]}" in
     --tag)
