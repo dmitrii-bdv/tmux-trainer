@@ -76,3 +76,11 @@ tmux-trainer --tag config  # filter by tag
 - [docs/scripts.md](docs/scripts.md) — script reference
 - [docs/github-workflow.md](docs/github-workflow.md) —
   GitHub Actions setup and Telegram configuration
+
+## License
+
+tmux-trainer is free to use, modify, and share for noncommercial
+purposes under the [PolyForm Noncommercial License 1.0.0](LICENSE).
+
+Commercial use requires a separate agreement with the author.
+To ask, contact [dmitrii@bedov.ch](mailto:dmitrii@bedov.ch).

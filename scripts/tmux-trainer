@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# tmux-trainer — Copyright (c) 2026 Dmitrii Bedov
+# Licensed under the PolyForm Noncommercial License 1.0.0 (see LICENSE).
+# Commercial use requires permission: dmitrii@bedov.ch
 set -euo pipefail
 
 _src="${BASH_SOURCE[0]}"
@@ -447,6 +450,10 @@ tmux-trainer c        # verify tmux state
 tmux-trainer cheat    # shortcut reference
 tmux-trainer r        # random drill
 .fi
+.SH LICENSE
+PolyForm Noncommercial License 1.0.0. Noncommercial use is free.
+Commercial use requires permission from the author:
+dmitrii@bedov.ch.
 .SH AUTHOR
 Written by DiBDV. Source: https://github.com/DiBDV/tmux-trainer
 TROFF
@@ -513,6 +520,11 @@ EXAMPLES
     tmux-trainer cheat        shortcut reference
     tmux-trainer r            random drill
     tmux-trainer --tag config all config exercises
+
+LICENSE
+    PolyForm Noncommercial License 1.0.0 (see LICENSE in the repo).
+    Noncommercial use is free. Commercial use requires permission:
+    dmitrii@bedov.ch
 
 MANPAGE
   exit 0
