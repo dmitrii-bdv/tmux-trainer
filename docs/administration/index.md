@@ -11,7 +11,7 @@ spaced-repetition reviews, and verifies the tmux state with checks
 written into each exercise. A daily reminder runs through macOS
 launchd or a GitHub Actions workflow.
 
-Current release: **v1.1.0**. See [CHANGELOG](../../CHANGELOG.md).
+Current release: **v1.4.0**. See [CHANGELOG](../../CHANGELOG.md).
 
 ## Components
 
@@ -23,7 +23,7 @@ Current release: **v1.1.0**. See [CHANGELOG](../../CHANGELOG.md).
 | Exercises | `exercises/day-NN.md` | 41 Markdown lessons with a `## Check` block |
 | Completions | `completions/` | zsh and bash tab completion, read from the tool |
 | Reminder (macOS) | `scripts/install-launchd`, `launchd/` | Daily 09:00 launchd agent |
-| Reminder (CI) | `.github/workflows/weekday-reminder.yml` | Daily GitHub issue, Telegram message |
+| Reminder (CI) | `.github/workflows/weekday-reminder.yml` | Daily GitHub issue, plus Telegram, Slack, Discord, or e-mail when configured |
 | CI | `.github/workflows/ci.yml` | ShellCheck, exercise lint, Bats tests |
 | Tests | `tests/` | Bats unit and end-to-end tests |
 
