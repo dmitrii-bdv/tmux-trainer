@@ -6,13 +6,7 @@ Effort: [S] hours · [M] days · [L] week+
 
 ## Next
 
-1. **Reusable reminder workflow with channel variables** [M]
-   — configure e-mail, Telegram, Slack, or Discord per repo through
-   GitHub variables and secrets; see
-   `docs/administration/github-workflow.md`.
-2. **Telegram integration** [M]
-3. **Slack integration** [M]
-4. **Discord integration** [M]
+Nothing scheduled yet.
 
 ---
 
@@ -51,3 +45,6 @@ CLI stays the primary product until then.
 - **Webhook reminder** [M] — POSTs exercise title and goal to
   Telegram, Slack, or Discord on every run; platform detected
   from URL shape.
+- **Reminder channels in GitHub workflow** [M] → v1.4.0 — Telegram,
+  Slack, Discord, and e-mail, each enabled by its variables and
+  secrets. See `docs/administration/github-workflow.md`.

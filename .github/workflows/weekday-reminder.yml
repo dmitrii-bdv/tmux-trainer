@@ -3,6 +3,10 @@ name: Weekday tmux reminder
 # REMINDER_HOUR: set this repository variable (Settings → Variables) to
 # control which Berlin hour triggers the reminder. Default: "09".
 # Supported range: "06" – "12" (maps to UTC 4–12, covered by the cron).
+#
+# Notification channels are optional. Each one runs only when its
+# credentials are set; unset channels are skipped. See
+# docs/administration/github-workflow.md for the variables and secrets.
 
 on:
   schedule:
@@ -61,18 +65,145 @@ jobs:
           echo "url=${ISSUE_URL}" >> "$GITHUB_OUTPUT"
           echo "title=${TITLE}" >> "$GITHUB_OUTPUT"
 
-      - name: Send Telegram notification
+      - name: Detect configured notification channels
+        id: channels
         if: steps.time.outputs.run == 'true' && steps.issue.outputs.url != ''
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          SMTP_HOST: ${{ vars.SMTP_HOST }}
+          REMINDER_EMAIL_FROM: ${{ vars.REMINDER_EMAIL_FROM }}
+          REMINDER_EMAIL_TO: ${{ vars.REMINDER_EMAIL_TO }}
+        shell: bash
+        run: |
+          # Record only true/false per channel. Secret values are never
+          # printed.
+          {
+            if [[ -n "${TELEGRAM_BOT_TOKEN}" && -n "${TELEGRAM_CHAT_ID}" ]]; then
+              echo "telegram=true"
+            else
+              echo "telegram=false"
+            fi
+            if [[ -n "${SLACK_WEBHOOK_URL}" ]]; then
+              echo "slack=true"
+            else
+              echo "slack=false"
+            fi
+            if [[ -n "${DISCORD_WEBHOOK_URL}" ]]; then
+              echo "discord=true"
+            else
+              echo "discord=false"
+            fi
+            if [[ -n "${SMTP_HOST}" && -n "${REMINDER_EMAIL_FROM}" \
+               && -n "${REMINDER_EMAIL_TO}" ]]; then
+              echo "email=true"
+            else
+              echo "email=false"
+            fi
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Send Telegram notification
+        # One failing channel must not block the others.
+        continue-on-error: true
+        if: steps.channels.outputs.telegram == 'true'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          ISSUE_TITLE: ${{ steps.issue.outputs.title }}
+          ISSUE_URL: ${{ steps.issue.outputs.url }}
         shell: bash
         run: |
           TODAY="$(TZ=Europe/Berlin date '+%A, %d %B')"
-          MESSAGE="🖥 *tmux training — ${TODAY}*%0A%0A*${{ steps.issue.outputs.title }}*%0A%0A${{ steps.issue.outputs.url }}"
+          MESSAGE="🖥 *tmux training — ${TODAY}*%0A%0A*${ISSUE_TITLE}*%0A%0A${ISSUE_URL}"
           curl -fsSL \
             "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             -d "chat_id=${TELEGRAM_CHAT_ID}" \
             -d "text=${MESSAGE}" \
             -d "parse_mode=Markdown" \
             -d "disable_web_page_preview=false"
+
+      - name: Send Slack notification
+        # One failing channel must not block the others.
+        continue-on-error: true
+        if: steps.channels.outputs.slack == 'true'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          ISSUE_TITLE: ${{ steps.issue.outputs.title }}
+          ISSUE_URL: ${{ steps.issue.outputs.url }}
+        shell: bash
+        run: |
+          TODAY="$(TZ=Europe/Berlin date '+%A, %d %B')"
+          TEXT="*tmux training — ${TODAY}*"$'\n\n'"${ISSUE_TITLE}"$'\n\n'"${ISSUE_URL}"
+          jq -n --arg text "${TEXT}" '{text: $text}' \
+            | curl -fsSL -H 'Content-Type: application/json' \
+                --data-binary @- "${SLACK_WEBHOOK_URL}"
+
+      - name: Send Discord notification
+        # One failing channel must not block the others.
+        continue-on-error: true
+        if: steps.channels.outputs.discord == 'true'
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ISSUE_TITLE: ${{ steps.issue.outputs.title }}
+          ISSUE_URL: ${{ steps.issue.outputs.url }}
+        shell: bash
+        run: |
+          TODAY="$(TZ=Europe/Berlin date '+%A, %d %B')"
+          TEXT="**tmux training — ${TODAY}**"$'\n\n'"${ISSUE_TITLE}"$'\n\n'"${ISSUE_URL}"
+          jq -n --arg text "${TEXT}" '{content: $text}' \
+            | curl -fsSL -H 'Content-Type: application/json' \
+                --data-binary @- "${DISCORD_WEBHOOK_URL}"
+
+      - name: Send e-mail notification
+        # One failing channel must not block the others.
+        continue-on-error: true
+        if: steps.channels.outputs.email == 'true'
+        env:
+          SMTP_HOST: ${{ vars.SMTP_HOST }}
+          SMTP_PORT: ${{ vars.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          REMINDER_EMAIL_FROM: ${{ vars.REMINDER_EMAIL_FROM }}
+          REMINDER_EMAIL_TO: ${{ vars.REMINDER_EMAIL_TO }}
+          ISSUE_TITLE: ${{ steps.issue.outputs.title }}
+          ISSUE_URL: ${{ steps.issue.outputs.url }}
+        shell: bash
+        run: |
+          SMTP_PORT="${SMTP_PORT:-587}"
+          # Port 465 uses implicit TLS; other ports use STARTTLS.
+          SCHEME=smtp
+          TLS_FLAG=(--ssl-reqd)
+          if [[ "${SMTP_PORT}" == "465" ]]; then
+            SCHEME=smtps
+          fi
+
+          TODAY="$(TZ=Europe/Berlin date '+%A, %d %B')"
+          SUBJECT="tmux training — ${TODAY}: ${ISSUE_TITLE}"
+          # Encode the subject so the em dash survives any mail client.
+          ENCODED_SUBJECT="=?UTF-8?B?$(printf '%s' "${SUBJECT}" | base64 -w0)?="
+
+          MAIL="$(mktemp)"
+          {
+            printf 'From: tmux trainer <%s>\r\n' "${REMINDER_EMAIL_FROM}"
+            printf 'To: <%s>\r\n' "${REMINDER_EMAIL_TO}"
+            printf 'Subject: %s\r\n' "${ENCODED_SUBJECT}"
+            printf 'Date: %s\r\n' "$(date -R)"
+            printf 'MIME-Version: 1.0\r\n'
+            printf 'Content-Type: text/plain; charset=UTF-8\r\n\r\n'
+            printf '%s\r\n' "${ISSUE_TITLE}" "" "${ISSUE_URL}"
+          } > "${MAIL}"
+
+          AUTH=()
+          if [[ -n "${SMTP_USERNAME}" ]]; then
+            AUTH=(--user "${SMTP_USERNAME}:${SMTP_PASSWORD}")
+          fi
+
+          curl -fsS "${TLS_FLAG[@]}" \
+            --url "${SCHEME}://${SMTP_HOST}:${SMTP_PORT}" \
+            --mail-from "${REMINDER_EMAIL_FROM}" \
+            --mail-rcpt "${REMINDER_EMAIL_TO}" \
+            "${AUTH[@]}" \
+            --upload-file "${MAIL}"
+          rm -f "${MAIL}"
