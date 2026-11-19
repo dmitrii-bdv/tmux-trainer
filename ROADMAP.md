@@ -6,9 +6,13 @@ Effort: [S] hours · [M] days · [L] week+
 
 ## Next
 
-1. **Telegram integration** [M]
-2. **Slack integration** [M]
-3. **Discord integration** [M]
+1. **Reusable reminder workflow with channel variables** [M]
+   — configure e-mail, Telegram, Slack, or Discord per repo through
+   GitHub variables and secrets; see
+   `docs/administration/github-workflow.md`.
+2. **Telegram integration** [M]
+3. **Slack integration** [M]
+4. **Discord integration** [M]
 
 ---
 
