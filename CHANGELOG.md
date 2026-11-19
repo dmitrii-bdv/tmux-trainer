@@ -4,6 +4,21 @@ All notable changes to tmux-trainer are documented here. The format
 follows [Keep a Changelog](https://keepachangelog.com/), and versions
 follow [Semantic Versioning](https://semver.org/).
 
+## v1.4.0 - 2026-11-19
+
+### Added
+
+- The GitHub reminder workflow sends to Slack, Discord, and e-mail, in
+  addition to Telegram. Each channel runs only when its variables and
+  secrets are set, so unconfigured channels are skipped. A failing
+  channel does not block the others. See
+  `docs/administration/github-workflow.md`.
+
+### Changed
+
+- The Telegram step in the reminder workflow is skipped when its secrets
+  are missing, instead of failing the run.
+
 ## v1.3.0 - 2026-11-18
 
 ### Added
